@@ -7,11 +7,19 @@ interface EnterScreenProps {
 export default function EnterScreen({ onEnter }: EnterScreenProps) {
     return (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black overflow-hidden">
-            {/* Background with radial gradient for depth */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-purple-900/40 via-black to-black animate-pulse-slow"></div>
+            {/* Video Background */}
+            <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover"
+            >
+                <source src="/intro.mp4" type="video/mp4" />
+            </video>
 
-            {/* Mist/Fog effect (optional, using simple opacity for now) */}
-            <div className="absolute inset-0 bg-black/20"></div>
+            {/* Radial Gradient Overlay: Black center for readability, fading to light overlay */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,1)_0%,rgba(0,0,0,1)_20%,rgba(0,0,0,0.3)_100%)]"></div>
 
             <div className="relative z-10 flex flex-col items-center gap-8">
                 <h2 className="text-2xl md:text-3xl text-gray-400 font-[family-name:var(--font-cinzel)] tracking-[0.2em] uppercase opacity-80 animate-fade-in">

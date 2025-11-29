@@ -5,7 +5,7 @@ import VideoBackground from "@/components/VideoBackground";
 import Hero from "@/components/Hero";
 import EnterScreen from "@/components/EnterScreen";
 
-const VIDEOS = ["/hero-videoa.mp4", "/hero-videoa.mp4"];
+const VIDEOS = ["/hero-videoa.mp4", "/hero-videob.mp4"];
 
 export default function Home() {
   const [showContent, setShowContent] = useState(false);
