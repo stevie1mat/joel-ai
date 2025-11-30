@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import VideoBackground from "@/components/VideoBackground";
 import Hero from "@/components/Hero";
 import EnterScreen from "@/components/EnterScreen";
+import StorySequence from "@/components/StorySequence";
 
 const VIDEOS = ["/hero-videoa.mp4", "/hero-videob.mp4"];
 
@@ -12,6 +13,8 @@ export default function Home() {
   const [videoSrc, setVideoSrc] = useState(VIDEOS[0]);
   const [isClient, setIsClient] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
+  const [showStory, setShowStory] = useState(false);
+  const [showGame, setShowGame] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -27,27 +30,52 @@ export default function Home() {
 
   const handleStart = () => {
     setHasStarted(true);
+    setShowStory(true);
+  };
+
+  const handleStartAdventure = () => {
+    setShowContent(false);
+    setShowGame(true);
+  };
+
+  const handleStoryComplete = () => {
+    setShowStory(false);
+    setShowContent(true);
   };
 
   if (!isClient) return null; // Prevent hydration mismatch
 
+  if (showGame) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center font-[family-name:var(--font-cinzel)]">
+        <h1 className="text-4xl animate-pulse">GAME UI PLACEHOLDER</h1>
+      </div>
+    );
+  }
+
   return (
     <main className="relative min-h-screen overflow-hidden font-[family-name:var(--font-geist-sans)]">
-      <VideoBackground
-        videoSrc={videoSrc}
-        startTime={1}
-        stopTime={9}
-        isPlaying={hasStarted}
-        onVideoStop={handleVideoStop}
-      />
+      {/* Always mount VideoBackground once started - it sits behind everything */}
+      {hasStarted && (
+        <VideoBackground
+          videoSrc={videoSrc}
+          startTime={1}
+          isPlaying={!showStory}
+          onVideoStop={handleVideoStop}
+        />
+      )}
 
       {!hasStarted && (
         <EnterScreen onEnter={handleStart} />
       )}
 
-      <div className={`transition-opacity duration-1000 ${showContent ? "opacity-100" : "opacity-0"}`}>
-        <Hero />
-      </div>
+      {showStory && (
+        <StorySequence onComplete={handleStoryComplete} />
+      )}
+
+      {showContent && !showStory && (
+        <Hero onStartAdventure={handleStartAdventure} />
+      )}
     </main>
   );
 }

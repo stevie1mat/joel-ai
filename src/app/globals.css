@@ -15,6 +15,7 @@
 @theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-arn-gold: #ffb74d;
 
   @keyframes fadeIn {
     from {
@@ -25,6 +26,16 @@
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 0;
     }
   }
 
@@ -41,6 +52,191 @@
   }
 
   --animate-pulse-slow: pulseSlow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  @keyframes flameReveal {
+    0% {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+      color: #ff4500;
+      /* OrangeRed */
+      text-shadow: 0 0 20px #ff0000, 0 0 40px #ff4500;
+      filter: blur(4px);
+    }
+
+    50% {
+      opacity: 0.8;
+      color: #ffa500;
+      /* Orange */
+      text-shadow: 0 0 10px #ff8c00, 0 0 20px #ff4500;
+      filter: blur(2px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      color: inherit;
+      /* Revert to original color */
+      text-shadow: none;
+      filter: blur(0);
+    }
+  }
+
+  --animate-flame-reveal: flameReveal 1.5s ease-out forwards;
+
+  @keyframes glitch {
+    0% {
+      transform: translate(0);
+    }
+
+    20% {
+      transform: translate(-2px, 2px);
+    }
+
+    40% {
+      transform: translate(-2px, -2px);
+    }
+
+    60% {
+      transform: translate(2px, 2px);
+    }
+
+    80% {
+      transform: translate(2px, -2px);
+    }
+
+    100% {
+      transform: translate(0);
+    }
+  }
+
+  --animate-glitch: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+
+  @keyframes shake {
+
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+      transform: translateX(-2px);
+    }
+
+    20%,
+    40%,
+    60%,
+    80% {
+      transform: translateX(2px);
+    }
+  }
+
+  --animate-shake: shake 0.5s cubic-bezier(.36, .07, .19, .97) both infinite;
+
+  @keyframes burstIn {
+    0% {
+      opacity: 0;
+      transform: scale(1.5);
+      filter: brightness(2) blur(20px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: scale(1);
+      filter: brightness(1) blur(0);
+    }
+  }
+
+  --animate-burst-in: burstIn 0.8s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+
+  @keyframes flicker {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    5% {
+      opacity: 0.8;
+    }
+
+    10% {
+      opacity: 0.9;
+    }
+
+    15% {
+      opacity: 0.85;
+    }
+
+    20% {
+      opacity: 1;
+    }
+
+    25% {
+      opacity: 0.75;
+    }
+
+    30% {
+      opacity: 0.9;
+    }
+
+    35% {
+      opacity: 0.8;
+    }
+
+    40% {
+      opacity: 1;
+    }
+
+    45% {
+      opacity: 0.85;
+    }
+
+    50% {
+      opacity: 0.95;
+    }
+
+    55% {
+      opacity: 0.8;
+    }
+
+    60% {
+      opacity: 0.9;
+    }
+
+    65% {
+      opacity: 0.85;
+    }
+
+    70% {
+      opacity: 1;
+    }
+
+    75% {
+      opacity: 0.8;
+    }
+
+    80% {
+      opacity: 0.9;
+    }
+
+    85% {
+      opacity: 0.85;
+    }
+
+    90% {
+      opacity: 0.95;
+    }
+
+    95% {
+      opacity: 0.8;
+    }
+  }
+
+  --animate-flicker: flicker 4s infinite;
 }
 
 body {
