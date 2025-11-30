@@ -20,7 +20,7 @@ export default function NarrativeFeed({ items, isProcessing = false, onAction }:
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
                     </div>
-                    <span className="text-[10px] font-bold tracking-[0.2em] text-zinc-500 uppercase">JOEL AI GAME MASTER</span>
+                    <span className="text-[10px] font-bold tracking-[0.2em] text-zinc-500 uppercase">AI DUNGEON MASTER</span>
                 </div>
 
                 {items.map((item) => (

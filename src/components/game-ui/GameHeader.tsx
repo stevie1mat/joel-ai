@@ -12,7 +12,7 @@ export default function GameHeader() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
                     </div>
-                    <span className="text-xl font-bold tracking-wider text-white font-[family-name:var(--font-cinzel)]">JOEL AI</span>
+                    <span className="text-xl font-bold tracking-wider text-white font-[family-name:var(--font-cinzel)]">AI D&D</span>
                 </div>
 
                 <button className="flex items-center gap-2 text-xs font-bold text-zinc-400 hover:text-white transition-colors tracking-widest uppercase">

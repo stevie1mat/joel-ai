@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import VideoBackground from "@/components/VideoBackground";
 import Hero from "@/components/Hero";
 import EnterScreen from "@/components/EnterScreen";
@@ -9,6 +10,7 @@ import StorySequence from "@/components/StorySequence";
 const VIDEOS = ["/hero-videoa.mp4", "/hero-videob.mp4"];
 
 export default function Home() {
+  const router = useRouter();
   const [showContent, setShowContent] = useState(false);
   const [videoSrc, setVideoSrc] = useState(VIDEOS[0]);
   const [isClient, setIsClient] = useState(false);
@@ -34,8 +36,7 @@ export default function Home() {
   };
 
   const handleStartAdventure = () => {
-    setShowContent(false);
-    setShowGame(true);
+    router.push("/login");
   };
 
   const handleStoryComplete = () => {

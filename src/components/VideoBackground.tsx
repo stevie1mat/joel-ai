@@ -71,6 +71,7 @@ export default function VideoBackground({ stopTime, startTime = 0, videoSrc, isP
         key={videoSrc} // Force re-render when source changes
         loop={!stopTime} // Don't loop if we are stopping
         playsInline
+        muted
         className="absolute top-0 left-0 w-full h-full object-cover"
       >
         <source src={videoSrc} type="video/mp4" />

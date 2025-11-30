@@ -42,7 +42,13 @@ export default function LedgerPanel({ character }: LedgerPanelProps) {
                         <div className="relative aspect-[3/4] w-full rounded-lg overflow-hidden border border-white/10 group">
                             {/* Image */}
                             <img
-                                src={character.portraitId ? getVisualAsset(character.portraitId) : "https://placehold.co/400x600/1a1a1a/ffb74d?text=Character"}
+                                src={
+                                    character.portraitId?.startsWith('http')
+                                        ? character.portraitId
+                                        : character.portraitId
+                                            ? getVisualAsset(character.portraitId)
+                                            : "https://placehold.co/400x600/1a1a1a/ffb74d?text=Character"
+                                }
                                 alt={character.name}
                                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                             />
