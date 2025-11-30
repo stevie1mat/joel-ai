@@ -6,7 +6,7 @@ export default function Hero({ onStartAdventure }: HeroProps) {
     return (
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-4 font-[family-name:var(--font-cinzel)]">
             {/* Subtle Background Overlay for contrast */}
-            <div className="absolute inset-0 bg-black/10 -z-20"></div>
+            <div className="absolute inset-0 bg-black/30 -z-20"></div>
 
             {/* Radial Gradient Overlay matching EnterScreen */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,1)_10%,rgba(0,0,0,1)_15%,rgba(0,0,0,0.3)_100%)] -z-10 opacity-0 animate-flame-reveal [animation-delay:7s]"></div>

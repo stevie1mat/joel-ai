@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 interface EnterScreenProps {
     onEnter: () => void;
 }
 
 export default function EnterScreen({ onEnter }: EnterScreenProps) {
+    const router = useRouter();
     const [isEntering, setIsEntering] = useState(false);
 
     const handleEnterClick = () => {
@@ -14,8 +16,24 @@ export default function EnterScreen({ onEnter }: EnterScreenProps) {
         }, 4000); // 4 seconds for the text to be read
     };
 
+    const handleLoginClick = () => {
+        router.push("/login");
+    };
+
     return (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black overflow-hidden">
+            {/* Login Button - Top Right */}
+            <div className="absolute top-8 right-8 z-20">
+                <button
+                    onClick={handleLoginClick}
+                    className="group px-6 py-3 bg-transparent border-2 border-[#ffb74d]/50 hover:border-[#ffb74d] transition-all duration-300 hover:scale-105 shadow-[0_0_10px_rgba(255,183,77,0.2)] hover:shadow-[0_0_20px_rgba(255,183,77,0.4)]"
+                >
+                    <span className="text-sm font-bold text-[#ffb74d] font-[family-name:var(--font-cinzel)] tracking-widest group-hover:text-white transition-colors">
+                        LOGIN
+                    </span>
+                </button>
+            </div>
+
             {/* Video Background */}
             <video
                 autoPlay
