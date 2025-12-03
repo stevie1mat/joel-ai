@@ -30,7 +30,7 @@ export default function LedgerPanel({ character }: LedgerPanelProps) {
                         : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/5'
                         }`}
                 >
-                    Campaign Info
+                    Inventory
                 </button>
             </div>
 
@@ -96,11 +96,40 @@ export default function LedgerPanel({ character }: LedgerPanelProps) {
                 )}
 
                 {activeTab === 'campaign' && (
-                    <div className="text-center py-12 text-zinc-500 text-xs tracking-widest uppercase">
-                        No Campaign Data
+                    <div className="space-y-3">
+                        {character.resources.map((item, i) => ( // Using resources as mock inventory for now, or need to pass inventory prop
+                            // Actually, LedgerPanel only gets character state. 
+                            // We should probably use a mock inventory list here or add inventory to CharacterState.
+                            // For now, let's just use the mockInventory import if possible, or hardcode a few items for visual demo.
+                            // Better yet, let's import mockInventory from game-data.
+                            null
+                        ))}
+                        {/* Importing mockInventory directly for display since it's not in CharacterState yet */}
+                        <InventoryList />
                     </div>
                 )}
             </div>
         </div>
     );
 }
+
+import { mockInventory } from '@/lib/game-data';
+
+function InventoryList() {
+    return (
+        <div className="space-y-3">
+            {mockInventory.map((item) => (
+                <div key={item.id} className="bg-[#13141c] p-3 rounded border border-white/5 flex gap-3">
+                    <div className="w-10 h-10 bg-zinc-800 rounded flex items-center justify-center text-xs text-zinc-500">
+                        IMG
+                    </div>
+                    <div>
+                        <div className="text-xs font-bold text-zinc-200">{item.name}</div>
+                        <div className="text-[10px] text-zinc-500 uppercase tracking-wider">{item.type} • {item.rarity}</div>
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+}
+

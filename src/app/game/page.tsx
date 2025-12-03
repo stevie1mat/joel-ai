@@ -79,6 +79,13 @@ export default function GameUIPage() {
         loadCharacter();
     }, [router]);
 
+    // Initial prompt generation
+    useEffect(() => {
+        if (character && narrative.length === 0 && !isProcessing) {
+            handleAction("Begin the adventure");
+        }
+    }, [character, narrative.length, isProcessing]);
+
     // Derive the active visual from the latest narrative item that has one
     // Derive the active visual from the latest narrative item that has one (excluding items/events which stay inline)
     const activeVisualItem = [...narrative].reverse().find(item => item.imageUrl || item.portraitId);
@@ -111,12 +118,8 @@ export default function GameUIPage() {
                 return;
             }
 
-            // Generate scene image if we have an image prompt
-            let imageUrl = undefined;
-            if (data.imagePrompt) {
-                const scenePrompt = `${data.imagePrompt}, dark fantasy Chronicles of Arn, cinematic lighting with amber glow, dramatic atmosphere, detailed digital art, painterly style`;
-                imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(scenePrompt)}`;
-            }
+            // Use generated scene image from backend
+            const imageUrl = data.imageUrl;
 
             const newItem: NarrativeItem = {
                 id: Date.now().toString(),
