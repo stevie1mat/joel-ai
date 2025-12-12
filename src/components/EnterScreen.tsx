@@ -69,7 +69,7 @@ export default function EnterScreen({ onEnter }: EnterScreenProps) {
                         Enter the Metagame Layer.
                     </p>
                     <p className="text-white text-lg md:text-xl font-medium tracking-[0.4em] leading-relaxed font-[family-name:var(--font-cinzel)] uppercase mb-8 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
-                        Unleash the Play Economy.
+                        Text-Based. AI-Visualized.
                     </p>
                 </div>
 

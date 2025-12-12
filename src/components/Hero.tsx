@@ -18,7 +18,7 @@ export default function Hero({ onStartAdventure }: HeroProps) {
                 Volume II: The Ashenspire Saga
             </h2>
             <p className="text-lg md:text-xl text-gray-200 mb-12 max-w-2xl font-medium drop-shadow-md opacity-0 animate-flame-reveal [animation-delay:7.5s] tracking-wide italic font-[family-name:var(--font-lato)]">
-                "Survive the Erasure. An Endless AI-Generated RPG."
+                "Survive the Erasure. A Text-Based RPG where AI Visualizes Every Choice."
             </p>
 
             <div className="flex flex-col md:flex-row gap-6 w-full max-w-md md:max-w-none justify-center opacity-0 animate-flame-reveal [animation-delay:7.5s]">
