@@ -7,10 +7,13 @@ import Hero from "@/components/Hero";
 import EnterScreen from "@/components/EnterScreen";
 import StorySequence from "@/components/StorySequence";
 
+import SplashScreen from "@/components/game-ui/SplashScreen";
+
 const VIDEOS = ["/hero-videoa.mp4", "/hero-videob.mp4"];
 
 export default function Home() {
   const router = useRouter();
+  const [showSplash, setShowSplash] = useState(true);
   const [showContent, setShowContent] = useState(false);
   const [videoSrc, setVideoSrc] = useState(VIDEOS[0]);
   const [isClient, setIsClient] = useState(false);
@@ -20,6 +23,13 @@ export default function Home() {
 
   useEffect(() => {
     setIsClient(true);
+
+    // Check if splash has been seen in this session
+    const hasSeenSplash = sessionStorage.getItem("hasSeenSplash");
+    if (hasSeenSplash) {
+      setShowSplash(false);
+    }
+
     const lastIndex = parseInt(localStorage.getItem("lastVideoIndex") || "-1", 10);
     const nextIndex = (lastIndex + 1) % VIDEOS.length;
     setVideoSrc(VIDEOS[nextIndex]);
@@ -45,6 +55,13 @@ export default function Home() {
   };
 
   if (!isClient) return null; // Prevent hydration mismatch
+
+  if (showSplash) {
+    return <SplashScreen onComplete={() => {
+      setShowSplash(false);
+      sessionStorage.setItem("hasSeenSplash", "true");
+    }} />;
+  }
 
   if (showGame) {
     return (

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface EnterScreenProps {
     onEnter: () => void;
@@ -13,76 +14,129 @@ export default function EnterScreen({ onEnter }: EnterScreenProps) {
         setIsEntering(true);
         setTimeout(() => {
             onEnter();
-        }, 4000); // 4 seconds for the text to be read
-    };
-
-    const handleLoginClick = () => {
-        router.push("/login");
+        }, 1000); // Shorter transition for the new style
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black overflow-hidden">
-            {/* Login Button - Top Right */}
-            <div className="absolute top-8 right-8 z-20">
-                <button
-                    onClick={handleLoginClick}
-                    className="group px-6 py-3 bg-transparent border-2 border-[#ffb74d]/50 hover:border-[#ffb74d] transition-all duration-300 hover:scale-105 shadow-[0_0_10px_rgba(255,183,77,0.2)] hover:shadow-[0_0_20px_rgba(255,183,77,0.4)]"
-                >
-                    <span className="text-sm font-bold text-[#ffb74d] font-[family-name:var(--font-cinzel)] tracking-widest group-hover:text-white transition-colors">
-                        LOGIN
-                    </span>
-                </button>
+        <div className="fixed inset-0 z-50 flex flex-col justify-between p-6 md:p-12 text-white font-sans overflow-hidden">
+            {/* Navbar */}
+            <div className="absolute top-0 left-0 right-0 p-8 md:p-12 flex items-center justify-between z-50 bg-gradient-to-b from-black/50 to-transparent">
+                <div className="flex items-center gap-6">
+                    <h1 className="text-2xl md:text-3xl font-black tracking-tighter uppercase font-sans text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-zinc-400 drop-shadow-sm">
+                        CHRONICLES
+                    </h1>
+                    <div className="hidden md:flex px-3 py-1 bg-white/5 backdrop-blur-md rounded-none border border-white/10">
+                        <span className="text-[10px] font-bold tracking-[0.2em] uppercase flex items-center gap-2 text-zinc-300">
+                            <span className="w-1.5 h-1.5 bg-[#dc143c] rounded-full animate-pulse shadow-[0_0_10px_#dc143c]"></span>
+                            LIVE
+                        </span>
+                    </div>
+                </div>
+
+                <nav className="hidden md:flex items-center gap-8">
+                    {['Nexus', 'Vault', 'Prologue', 'About', 'Contacts'].map((item) => (
+                        <Link
+                            key={item}
+                            href={`/${item.toLowerCase()}`}
+                            className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400 hover:text-[#D4AF37] transition-all duration-300 hover:scale-105 transform cursor-pointer"
+                        >
+                            {item}
+                        </Link>
+                    ))}
+                </nav>
             </div>
 
-            {/* Video Background */}
+            {/* Main Content Layer - Centered vertically relative to screen */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center z-40 pointer-events-none">
+
+
+
+                {/* HUGE Typography */}
+                <div className="w-full flex flex-col items-center justify-center gap-[25vh]">
+                    <h2 className="text-[10vw] leading-none font-black tracking-tighter uppercase opacity-100 pointer-events-none select-none">
+                        REDEFINE
+                    </h2>
+                    <h2 className="text-[10vw] leading-none font-black tracking-tighter uppercase opacity-100 pointer-events-none select-none">
+                        ADVENTURE
+                    </h2>
+                </div>
+            </div>
+
+            {/* Central Content Box */}
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col items-center justify-center text-center p-32 w-[1400px] bg-[radial-gradient(circle,rgba(0,0,0,1)_0%,rgba(0,0,0,0.8)_30%,rgba(0,0,0,0)_70%)]">
+                <div className="flex flex-col items-center gap-2">
+                    <p className="text-[#bfbfbf] text-base md:text-lg font-light tracking-[0.3em] leading-relaxed font-sans uppercase">
+                        Enter the Metagame Layer.
+                    </p>
+                    <p className="text-white text-lg md:text-xl font-medium tracking-[0.4em] leading-relaxed font-[family-name:var(--font-cinzel)] uppercase mb-8 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                        Unleash the Play Economy.
+                    </p>
+                </div>
+
+                <div className="flex flex-col md:flex-row items-center gap-6 mt-8">
+                    {/* Background Story Button */}
+                    <button
+                        onClick={handleEnterClick}
+                        className="group relative px-8 py-4 bg-black/40 text-[#D4AF37] border-2 border-[#D4AF37] rounded-none hover:rotate-0 transition-all duration-500 overflow-hidden min-w-[280px]"
+                    >
+                        <div className="absolute inset-0 w-0 bg-[#D4AF37] transition-all duration-[250ms] ease-out group-hover:w-full opacity-10"></div>
+                        <div className="flex items-center justify-center gap-4 relative z-10">
+                            <span className="text-sm font-black tracking-[0.3em] uppercase group-hover:text-[#FDD768] transition-colors duration-300">
+                                The Background Story
+                            </span>
+                            <svg className="w-4 h-4 text-[#D4AF37] group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                        </div>
+                        {/* Golden Glow Effect */}
+                        <div className="absolute inset-0 rounded-none shadow-[0_0_30px_rgba(212,175,55,0.2)] group-hover:shadow-[0_0_50px_rgba(212,175,55,0.4)] transition-shadow duration-500"></div>
+                    </button>
+
+                    {/* Login Button */}
+                    <button
+                        onClick={() => router.push("/login")}
+                        className="group relative px-8 py-4 bg-black/40 text-zinc-300 border-2 border-zinc-500 rounded-none hover:rotate-0 transition-all duration-500 overflow-hidden min-w-[200px] hover:border-[#D4AF37] hover:text-[#D4AF37]"
+                    >
+                        <div className="absolute inset-0 w-0 bg-[#D4AF37] transition-all duration-[250ms] ease-out group-hover:w-full opacity-10"></div>
+                        <div className="flex items-center justify-center gap-4 relative z-10">
+                            <span className="text-sm font-black tracking-[0.3em] uppercase group-hover:text-[#FDD768] transition-colors duration-300">
+                                Login
+                            </span>
+                            <svg className="w-4 h-4 text-current group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                            </svg>
+                        </div>
+                        {/* Golden Glow Effect on Hover */}
+                        <div className="absolute inset-0 rounded-none opacity-0 group-hover:opacity-100 shadow-[0_0_30px_rgba(212,175,55,0.2)] group-hover:shadow-[0_0_50px_rgba(212,175,55,0.4)] transition-all duration-500"></div>
+                    </button>
+                </div>
+            </div>
+
+            {/* Video Background (Already in parent, but duplicate check? No, parent renders video background behind this component isEnterScreen is just an overlay?)
+               Wait, EnterScreen in page.tsx sits ON TOP of VideoBackground?
+               Page.tsx:
+               {!hasStarted && <EnterScreen ... />}
+               Since EnterScreen handles its own background in the Reference Code I just read (it had a video tag inside), 
+               BUT page.tsx ALSO has VideoBackground that plays when `hasStarted` is true.
+               
+               In the OLD code, EnterScreen had its OWN video background `/intro-home.mp4`.
+               The user said "keep the background. video".
+               So I should keep the specific video logic or assume the main one is enough?
+               The old EnterScreen logic used a specific video. I will restore it to match the "Keep background" request.
+            */}
             <video
                 autoPlay
                 loop
                 muted
                 playsInline
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover -z-10 opacity-60"
             >
                 <source src="/intro-home.mp4" type="video/mp4" />
             </video>
 
-            {/* Radial Gradient Overlay: Black center for readability, fading to light overlay */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,1)_10%,rgba(0,0,0,1)_15%,rgba(0,0,0,0.3)_100%)]"></div>
-
-            <div className="relative z-10 flex flex-col items-center gap-8 text-center px-4">
-                {!isEntering ? (
-                    <>
-                        <h2 className="text-2xl md:text-3xl text-gray-400 font-[family-name:var(--font-cinzel)] tracking-[0.2em] uppercase opacity-80 animate-fade-in">
-                            Welcome Traveler
-                        </h2>
-
-                        <button
-                            onClick={handleEnterClick}
-                            className="group relative px-12 py-6 bg-transparent overflow-hidden transition-all duration-300 hover:scale-105"
-                        >
-                            {/* Button Border / Glow Container */}
-                            <div className="absolute inset-0 border-2 border-[#ffb74d] opacity-60 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_15px_rgba(255,183,77,0.3)] group-hover:shadow-[0_0_30px_rgba(255,183,77,0.6)]"></div>
-
-                            {/* Inner Fill */}
-                            <div className="absolute inset-0 bg-[#ffb74d]/5 group-hover:bg-[#ffb74d]/10 transition-colors duration-300"></div>
-
-                            {/* Text */}
-                            <span className="relative text-3xl md:text-4xl font-bold text-[#ffb74d] font-[family-name:var(--font-cinzel)] tracking-widest drop-shadow-md group-hover:text-white transition-colors duration-300">
-                                ENTER WORLD
-                            </span>
-                        </button>
-
-                        <p className="text-sm text-gray-600 font-[family-name:var(--font-cinzel)] tracking-widest mt-4 animate-pulse">
-                            Click to Begin Your Journey
-                        </p>
-                    </>
-                ) : (
-                    <div className="animate-[fadeIn_1s_ease-out_forwards,fadeOut_1s_ease-in_3s_forwards]">
-                        <p className="text-2xl md:text-3xl text-[#ffb74d] font-[family-name:var(--font-cinzel)] tracking-widest drop-shadow-[0_0_10px_rgba(255,183,77,0.5)] italic">
-                            This is how it all started...
-                        </p>
-                    </div>
-                )}
-            </div>
+            {/* Grain/Overlay */}
+            <div className="absolute inset-0 bg-black/40 pointer-events-none -z-10"></div>
+            <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none -z-10 mix-blend-overlay"></div>
         </div>
     );
 }
