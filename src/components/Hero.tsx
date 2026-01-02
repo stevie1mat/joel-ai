@@ -8,11 +8,10 @@ export default function Hero({ onStartAdventure }: HeroProps) {
             {/* Subtle Background Overlay for contrast */}
             <div className="absolute inset-0 bg-black/30 -z-20"></div>
 
-            {/* Radial Gradient Overlay matching EnterScreen */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,1)_10%,rgba(0,0,0,1)_15%,rgba(0,0,0,0.3)_100%)] -z-10 opacity-0 animate-flame-reveal [animation-delay:7s]"></div>
+
 
             <h1 className="text-2xl md:text-7xl font-bold text-white tracking-tighter mb-2 drop-shadow-lg flex flex-col gap-2 animate-fade-in-up">
-                <span className="opacity-0 animate-flame-reveal [animation-delay:7s]">THE CHRONICLES OF ARN</span>
+                <span className="opacity-0 animate-flame-reveal [animation-delay:7s]">THE AETHER CHRONICLES</span>
             </h1>
             <h2 className="text-3xl md:text-4xl text-[#ffb74d] font-bold mb-6 opacity-0 animate-flame-reveal [animation-delay:7.5s] tracking-widest font-[family-name:var(--font-fauna-one)]">
                 Volume II: The Ashenspire Saga

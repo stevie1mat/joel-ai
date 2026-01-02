@@ -102,7 +102,7 @@ export default function StorySequence({ onComplete }: StorySequenceProps) {
             {/* Loader Stage */}
             {stage === "loader" && (
                 <div className="text-[#00ff00] font-mono text-lg md:text-xl tracking-widest animate-pulse">
-                    <p className="mb-2">{">"} INITIALIZING CHRONICLES OF ARN...</p>
+                    <p className="mb-2">{">"} INITIALIZING AETHER CHRONICLES...</p>
                     <p className="animate-[fadeIn_0.5s_ease-out_1s_forwards] opacity-0">{">"} SYNCING ASHENSPIRE SAGA...</p>
                 </div>
             )}

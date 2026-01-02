@@ -1,0 +1,13 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="256" height="256" rx="60" fill="#0F172A"/>
+  <!-- Bot Head -->
+  <rect x="58" y="88" width="140" height="120" rx="24" fill="#E2E8F0"/>
+  <rect x="78" y="118" width="100" height="60" rx="12" fill="#1E293B"/>
+  <!-- Eyes -->
+  <circle cx="103" cy="148" r="12" fill="#3B82F6"/>
+  <circle cx="153" cy="148" r="12" fill="#3B82F6"/>
+  
+  <!-- Flame -->
+  <path d="M128 10C110 35 100 55 100 75C100 90 112.5 102 128 102C143.5 102 156 90 156 75C156 55 146 35 128 10Z" fill="#F97316"/>
+  <path d="M128 25C118 40 112 52 112 65C112 75 118 82 128 82C138 82 144 75 144 65C144 52 138 40 128 25Z" fill="#FDBA74"/>
+</svg>

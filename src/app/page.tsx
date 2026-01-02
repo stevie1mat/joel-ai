@@ -9,7 +9,7 @@ import StorySequence from "@/components/StorySequence";
 
 import SplashScreen from "@/components/game-ui/SplashScreen";
 
-const VIDEOS = ["/hero-videoa.mp4", "/hero-videob.mp4"];
+const VIDEOS = ["/hero-videoa.mp4"];
 
 export default function Home() {
   const router = useRouter();

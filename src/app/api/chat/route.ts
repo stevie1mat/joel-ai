@@ -15,7 +15,7 @@ const bytez = new Bytez(BYTEZ_KEY);
 const bytezModel = bytez.model("google/imagen-4.0-generate-001");
 
 const SYSTEM_PROMPT = `
-You are the Dungeon Master for a text-based RPG called Chronicles of Arn, set in a dark fantasy world with amber-lit mystical themes.
+You are the Dungeon Master for a text-based RPG called Aether Chronicles, set in a dark fantasy world with amber-lit mystical themes.
 Your role is to narrate the story, describe the environment, and determine the outcomes of the player's actions.
 Be descriptive, immersive, and fair. If the player attempts an action that requires a skill check, look for a "[Rolled: X]" tag in their input.
 If present, USE THAT VALUE to determine the outcome (e.g., high roll = success, low roll = failure).

@@ -1,4 +1,4 @@
--- Create characters table for Chronicles of Arn
+-- Create characters table for Aether Chronicles
 CREATE TABLE IF NOT EXISTS public.characters (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,

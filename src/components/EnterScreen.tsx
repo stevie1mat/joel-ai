@@ -63,7 +63,7 @@ export default function EnterScreen({ onEnter }: EnterScreenProps) {
             </div>
 
             {/* Central Content Box */}
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col items-center justify-center text-center p-32 w-[1400px] bg-[radial-gradient(circle,rgba(0,0,0,1)_0%,rgba(0,0,0,0.8)_30%,rgba(0,0,0,0)_70%)]">
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col items-center justify-center text-center p-32 w-[1400px]">
                 <div className="flex flex-col items-center gap-2">
                     <p className="text-[#bfbfbf] text-base md:text-lg font-light tracking-[0.3em] leading-relaxed font-sans uppercase">
                         Enter the Metagame Layer.
@@ -95,19 +95,16 @@ export default function EnterScreen({ onEnter }: EnterScreenProps) {
                     {/* Login Button */}
                     <button
                         onClick={() => router.push("/login")}
-                        className="group relative px-8 py-4 bg-black/40 text-zinc-300 border-2 border-zinc-500 rounded-none hover:rotate-0 transition-all duration-500 overflow-hidden min-w-[200px] hover:border-[#D4AF37] hover:text-[#D4AF37]"
+                        className="group relative px-8 py-4 bg-[#DC143C] text-white border-2 border-[#DC143C] rounded-none hover:bg-[#B22222] transition-all duration-500 overflow-hidden min-w-[200px] shadow-[0_0_15px_rgba(220,20,60,0.5)] hover:shadow-[0_0_25px_rgba(220,20,60,0.8)]"
                     >
-                        <div className="absolute inset-0 w-0 bg-[#D4AF37] transition-all duration-[250ms] ease-out group-hover:w-full opacity-10"></div>
                         <div className="flex items-center justify-center gap-4 relative z-10">
-                            <span className="text-sm font-black tracking-[0.3em] uppercase group-hover:text-[#FDD768] transition-colors duration-300">
+                            <span className="text-sm font-black tracking-[0.3em] uppercase transition-colors duration-300">
                                 Login
                             </span>
-                            <svg className="w-4 h-4 text-current group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                             </svg>
                         </div>
-                        {/* Golden Glow Effect on Hover */}
-                        <div className="absolute inset-0 rounded-none opacity-0 group-hover:opacity-100 shadow-[0_0_30px_rgba(212,175,55,0.2)] group-hover:shadow-[0_0_50px_rgba(212,175,55,0.4)] transition-all duration-500"></div>
                     </button>
                 </div>
             </div>
@@ -131,7 +128,7 @@ export default function EnterScreen({ onEnter }: EnterScreenProps) {
                 playsInline
                 className="absolute inset-0 w-full h-full object-cover -z-10 opacity-60"
             >
-                <source src="/intro-home.mp4" type="video/mp4" />
+                <source src="/slides/slider-4.mp4" type="video/mp4" />
             </video>
 
             {/* Grain/Overlay */}

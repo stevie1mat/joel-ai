@@ -58,11 +58,10 @@ export default function PageShell({ children }: PageShellProps) {
                 playsInline
                 className="absolute inset-0 w-full h-full object-cover -z-10 opacity-60"
             >
-                <source src="/intro-home.mp4" type="video/mp4" />
+                <source src="/hero-videoa.mp4" type="video/mp4" />
             </video>
 
             {/* Grain/Overlay */}
-            <div className="absolute inset-0 bg-black/40 pointer-events-none -z-10"></div>
             <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none -z-10 mix-blend-overlay"></div>
         </div>
     );
