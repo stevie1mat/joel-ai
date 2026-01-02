@@ -1,0 +1,15 @@
+# Aether Chronicles
+
+> A text-based, AI generated fantasy simulation with infinite possibilities. Unlike most games where you experience worlds created by game developers, here your imagination is the only limit.
+
+## Core Pages
+- [Home](https://whichone.me/) - The main entrance to the chronicles.
+- [Login](https://whichone.me/login) - Access your account.
+- [About](https://whichone.me/about) - Learn more about the project.
+- [Nexus](https://whichone.me/nexus) - Central hub.
+- [Character Creation](https://whichone.me/character-creation) - Create your avatar.
+
+## Game Modules
+- [Prologue](https://whichone.me/prologue) - Begin your journey.
+- [Factions](https://whichone.me/factions) - Discover the powers at play.
+- [Vault](https://whichone.me/vault) - Access your inventory and secrets.
