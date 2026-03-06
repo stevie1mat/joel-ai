@@ -2,6 +2,14 @@
 
 Aether Chronicles is an AI-powered text-based Roleplaying Game (RPG) built with Next.js, Supabase, Mistral AI, and Bytez. Set in a dark fantasy world with amber-lit mystical themes, the game serves as an infinite digital Dungeon Master, allowing your imagination to be the only limit.
 
+## 📸 Screenshots
+
+| | | |
+|:---:|:---:|:---:|
+| ![Gameplay 1](screenshots/git-screenshot.png) | ![Gameplay 2](screenshots/git-screenshot2.png) | ![Gameplay 3](screenshots/git-screenshot3.png) |
+| ![Gameplay 4](screenshots/git-screenshot4.png) | ![Gameplay 5](screenshots/git-screenshot5.png) | |
+
+
 ## ✨ Features
 
 - **Infinite Digital Dungeon Master**: Powered by Mistral AI, the game dynamically responds to your actions, narrates the story, describes the environment, and manages skill checks based on classic Dungeons & Dragons mechanics.
