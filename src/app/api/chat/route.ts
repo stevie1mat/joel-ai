@@ -98,8 +98,9 @@ export async function POST(req: NextRequest) {
         try {
             // Mistral v1+ Node SDK
             const chatResponse = await mistral.chat.complete({
-                model: 'mistral-tiny',
+                model: 'mistral-small-latest',
                 messages: messages as any,
+                responseFormat: { type: 'json_object' }
             });
 
             // Handle different possible response structures from SDK
@@ -130,6 +131,7 @@ export async function POST(req: NextRequest) {
 
             if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
                 const jsonStr = responseText.substring(startIndex, endIndex + 1);
+
                 parsedResponse = JSON.parse(jsonStr);
                 narrative = parsedResponse.narrative || responseText;
                 imagePrompt = parsedResponse.imagePrompt || "";
