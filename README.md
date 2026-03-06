@@ -7,7 +7,7 @@ Aether Chronicles is an AI-powered text-based Roleplaying Game (RPG) built with 
 | | | |
 |:---:|:---:|:---:|
 | ![Gameplay 1](screenshots/git-screenshot.png) | ![Gameplay 2](screenshots/git-screenshot2.png) | ![Gameplay 3](screenshots/git-screenshot3.png) |
-| ![Gameplay 4](screenshots/git-screenshot4.png) | ![Gameplay 5](screenshots/git-screenshot5.png) | |
+| ![Gameplay 4](screenshots/git-screenshot4.png) | ![Gameplay 5](screenshots/git-screenshot5.png) | ![Gameplay 6](screenshots/git-screenshot6.png) |
 
 
 ## ✨ Features
