@@ -50,6 +50,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${cinzel.variable} ${faunaOne.variable} ${lato.variable} ${play.variable} antialiased`}
+        suppressHydrationWarning
       >
         {children}
       </body>
