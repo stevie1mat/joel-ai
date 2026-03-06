@@ -124,18 +124,18 @@ export async function POST(req: NextRequest) {
         };
 
         try {
-            // Attempt to extract JSON from markdown or raw text
-            let cleanedText = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
-            const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
+            // Attempt to extract JSON from markdown or raw text by finding the first { and last }
+            const startIndex = responseText.indexOf('{');
+            const endIndex = responseText.lastIndexOf('}');
 
-            if (jsonMatch) {
-                parsedResponse = JSON.parse(jsonMatch[0]);
+            if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
+                const jsonStr = responseText.substring(startIndex, endIndex + 1);
+                parsedResponse = JSON.parse(jsonStr);
                 narrative = parsedResponse.narrative || responseText;
                 imagePrompt = parsedResponse.imagePrompt || "";
                 animations = { ...animations, ...parsedResponse.animations };
             } else {
-                // Fallback if no JSON found - simpler logic than python but robust enough
-                console.warn("No JSON found in response");
+                console.warn("No JSON braces found in response");
                 narrative = responseText;
             }
         } catch (parseError) {
