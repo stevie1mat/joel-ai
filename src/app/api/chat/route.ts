@@ -4,15 +4,18 @@ import { Mistral } from '@mistralai/mistralai';
 import Bytez from 'bytez.js';
 
 // Configuration
-const BYTEZ_KEY = "REMOVED";
+const BYTEZ_KEY = process.env.BYTEZ_API_KEY || "";
 
 // Initialize Clients
 const mistral = new Mistral({
     apiKey: process.env.MISTRAL_API_KEY || '',
 });
 
-const bytez = new Bytez(BYTEZ_KEY);
-const bytezModel = bytez.model("google/imagen-4.0-generate-001");
+let bytezModel: any = null;
+if (BYTEZ_KEY) {
+    const bytez = new Bytez(BYTEZ_KEY);
+    bytezModel = bytez.model("google/imagen-4.0-generate-001");
+}
 
 const SYSTEM_PROMPT = `
 You are the Dungeon Master for a text-based RPG called Aether Chronicles, set in a dark fantasy world with amber-lit mystical themes.
@@ -121,8 +124,10 @@ export async function POST(req: NextRequest) {
         };
 
         try {
-            // Attempt to extract JSON
-            const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+            // Attempt to extract JSON from markdown or raw text
+            let cleanedText = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
+            const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
+
             if (jsonMatch) {
                 parsedResponse = JSON.parse(jsonMatch[0]);
                 narrative = parsedResponse.narrative || responseText;
@@ -131,31 +136,42 @@ export async function POST(req: NextRequest) {
             } else {
                 // Fallback if no JSON found - simpler logic than python but robust enough
                 console.warn("No JSON found in response");
+                narrative = responseText;
             }
         } catch (parseError) {
             console.error("JSON Parse Error:", parseError);
+            narrative = responseText; // Ensure narrative degrades gracefully on error
         }
 
         let imageUrl = "";
         if (imagePrompt) {
             console.log(`Generating image for: ${imagePrompt}`);
-            try {
-                // Bytez usage based on common patterns and python equivalent
-                const imageRes = await bytezModel.run(imagePrompt);
-                // Check if 'output' exists directly or nested
-                if (imageRes && typeof imageRes === 'object') {
-                    // @ts-ignore
-                    imageUrl = imageRes.output || imageRes[0] || "";
-                } else if (typeof imageRes === 'string') {
-                    imageUrl = imageRes;
+            if (!bytezModel) {
+                console.log("No Bytez API key found, skipping image generation.");
+            } else {
+                try {
+                    // Bytez Documented Syntax
+                    const { error, output } = await bytezModel.run(imagePrompt);
+
+                    if (error) {
+                        console.error("Bytez API Error returned:", error);
+                    } else if (output) {
+                        // Some Bytez models return an array of images, others just a base64 string
+                        if (Array.isArray(output) && output.length > 0) {
+                            imageUrl = `data:image/png;base64,${output[0]}`;
+                        } else if (typeof output === 'string') {
+                            // If it's already a Data URI or URL
+                            imageUrl = output.startsWith('data:') || output.startsWith('http')
+                                ? output
+                                : `data:image/png;base64,${output}`;
+                        }
+                    }
+                    console.log("Image generation result:", imageUrl ? "Success" : "Failed");
+                } catch (imgError) {
+                    console.error("Image Generation Exception:", imgError);
                 }
-                console.log("Image generation result:", imageUrl ? "Success" : "Failed");
-            } catch (imgError) {
-                console.error("Image Generation Error:", imgError);
             }
         }
-
-        // 5. Save AI Response
         const { error: aiMsgError } = await supabase
             .from('narrative_history')
             .insert({
