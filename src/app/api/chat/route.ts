@@ -93,13 +93,14 @@ export async function POST(req: NextRequest) {
 
         let responseText = "";
         try {
+            // Mistral v1+ Node SDK
             const chatResponse = await mistral.chat.complete({
                 model: 'mistral-tiny',
-                messages: messages as any, // Cast to any to avoid strict type issues with Supabase return types
+                messages: messages as any,
             });
 
             // Handle different possible response structures from SDK
-            if (Array.isArray(chatResponse.choices) && chatResponse.choices.length > 0) {
+            if (chatResponse.choices && chatResponse.choices.length > 0) {
                 responseText = chatResponse.choices[0].message.content as string;
             } else {
                 throw new Error("Invalid response from Mistral");
