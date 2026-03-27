@@ -43,23 +43,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
         }
     };
 
-    const handleGoogleAuth = async () => {
-        setLoading(true);
-        setError(null);
 
-        try {
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                    redirectTo: `${window.location.origin}/auth/callback`,
-                }
-            });
-            if (error) throw error;
-        } catch (err: any) {
-            setError(err.message);
-            setLoading(false);
-        }
-    };
 
     return (
         <div className="fixed inset-0 flex items-center justify-center">
@@ -125,29 +109,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                         </button>
                     </form>
 
-                    {/* Divider */}
-                    <div className="relative my-6">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-gray-600"></div>
-                        </div>
-                        <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-black/80 text-gray-400">OR</span>
-                        </div>
-                    </div>
 
-                    {/* Google Auth */}
-                    <button
-                        onClick={handleGoogleAuth}
-                        disabled={loading}
-                        className="w-full bg-white hover:bg-gray-100 text-black font-bold py-3 px-8 rounded-sm text-sm tracking-widest transition-all hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed font-[family-name:var(--font-play)] flex items-center justify-center gap-2"
-                    >
-                        <img
-                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Google_Favicon_2025.svg/250px-Google_Favicon_2025.svg.png"
-                            alt="Google"
-                            className="w-5 h-5"
-                        />
-                        [ CONTINUE WITH GOOGLE ]
-                    </button>
 
                     {/* Toggle Sign Up/Login */}
                     <div className="mt-6 text-center text-sm text-gray-400">
