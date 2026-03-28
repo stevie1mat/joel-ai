@@ -251,6 +251,7 @@ export async function POST(req: NextRequest) {
                 metadata: {
                     imageUrl: imageUrl,
                     animations: animations,
+                    gameStateUpdates: gameStateUpdates,
                     type: 'narrative'
                 }
             });
@@ -262,7 +263,8 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({
             response: narrative,
             imageUrl: imageUrl,
-            animations: animations
+            animations: animations,
+            gameStateUpdates: gameStateUpdates
         });
 
     } catch (error: any) {

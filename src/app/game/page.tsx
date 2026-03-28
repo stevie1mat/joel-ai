@@ -300,6 +300,20 @@ export default function GameUIPage() {
 
             setNarrative(prev => [...prev, newItem]);
 
+            if (data.gameStateUpdates) {
+                const updates = data.gameStateUpdates;
+                const xp = typeof updates.xpEarned === 'number' ? updates.xpEarned : 0;
+                const hp = typeof updates.hpChange === 'number' ? updates.hpChange : 0;
+                
+                if (xp > 0) showToast(`+${xp} XP earned!`, 'success');
+                if (hp > 0) showToast(`+${hp} HP recovered!`, 'success');
+                if (hp < 0) showToast(`${hp} HP lost!`, 'error');
+                
+                if (updates.newItems && Array.isArray(updates.newItems)) {
+                    updates.newItems.forEach((item: string) => showToast(`Found: ${item}`, 'success'));
+                }
+            }
+
             // 🔥 Refresh character data and inventory after action to sync game state
             await loadCharacter();
 

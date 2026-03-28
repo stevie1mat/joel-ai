@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { NarrativeItem } from '@/lib/game-data';
 import { getVisualAsset } from '@/lib/visual-canon';
 
@@ -10,9 +9,25 @@ interface NarrativeFeedProps {
 }
 
 export default function NarrativeFeed({ items, isProcessing = false, onAction }: NarrativeFeedProps) {
+    const scrollRef = useRef<HTMLDivElement>(null);
+
+    const scrollToBottom = () => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+    };
+
+    // Scroll when items change or when typing starts/stops
+    useEffect(() => {
+        scrollToBottom();
+    }, [items, isProcessing]);
+
     return (
         <div className="h-full flex flex-col relative overflow-hidden">
-            <div className="flex-1 overflow-y-auto p-4 space-y-6">
+            <div 
+                ref={scrollRef}
+                className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth"
+            >
 
                 {items.map((item) => (
                     <div key={item.id} className="animate-fadeIn max-w-4xl mx-auto w-full">
