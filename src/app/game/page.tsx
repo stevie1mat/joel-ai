@@ -17,6 +17,7 @@ import SettingsModal from '@/components/game-ui/SettingsModal';
 import SplashScreen from '@/components/game-ui/SplashScreen';
 import { getVisualAsset } from '@/lib/visual-canon';
 import CharacterSprite from '@/components/game-ui/CharacterSprite';
+import DiceRoller from '@/components/game-ui/DiceRoller';
 
 export default function GameUIPage() {
     const router = useRouter();
@@ -38,6 +39,8 @@ export default function GameUIPage() {
 
     const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' | 'info' } | null>(null);
     const [showSettings, setShowSettings] = useState(false);
+    const [rolling, setRolling] = useState(false);
+    const [pendingAction, setPendingAction] = useState<string | null>(null);
 
     // ── Keyboard-driven character movement ──
     const [charPosX, setCharPosX] = useState(50); // percentage across stage
@@ -317,11 +320,24 @@ export default function GameUIPage() {
             // 🔥 Refresh character data and inventory after action to sync game state
             await loadCharacter();
 
-        } catch (error) {
-            console.error('Failed to fetch AI response:', error);
-            showToast('Connection to the Realm lost.', 'error');
+        } catch (error: any) {
+            console.error('Action error:', error);
+            showToast('Failed to connect to the realm.', 'error');
         } finally {
             setIsProcessing(false);
+        }
+    };
+
+    const handleRollStart = (actionText: string) => {
+        setPendingAction(actionText);
+        setRolling(true);
+    };
+
+    const handleRollComplete = (result: number) => {
+        setRolling(false);
+        if (pendingAction) {
+            handleAction(`${pendingAction} [Rolled: ${result}]`);
+            setPendingAction(null);
         }
     };
 
@@ -666,8 +682,16 @@ export default function GameUIPage() {
 
                 {/* Action Deck */}
                 <div className="px-3 pb-4 pt-2 border-t border-[#ffb74d]/10 shrink-0">
-                    <ActionDeck inventory={inventory} onAction={handleAction} />
+                    <ActionDeck 
+                        inventory={inventory} 
+                        onAction={handleAction} 
+                        rolling={rolling}
+                        onRollStart={handleRollStart}
+                    />
                 </div>
+
+                {/* Centered Dice Roller Backdrop/Overlay */}
+                <DiceRoller rolling={rolling} onComplete={handleRollComplete} />
 
                 {/* Overlay Panels — slide over the floating panel */}
                 {activePanel === 'character' && (

@@ -44,8 +44,8 @@ export default function DiceRoller({ rolling, onComplete }: DiceRollerProps) {
     if (!rolling && !isAnimating && !showResult) return null;
 
     return (
-        <div className="fixed bottom-12 left-12 z-50 flex items-center justify-center transition-opacity duration-300 pointer-events-none">
-            <div className="relative flex flex-col items-center justify-center">
+        <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-[2px] transition-opacity duration-300 pointer-events-none rounded-2xl">
+            <div className="relative flex flex-col items-center justify-center p-8 bg-black/60 rounded-3xl border border-[#ffb74d]/20 shadow-[0_0_50px_rgba(0,0,0,0.8)] scale-125">
 
                 {/* 3D Dice Container */}
                 <div className={`relative w-24 h-24 transition-all duration-500 ${showResult ? 'scale-110' : 'scale-100'}`}>
@@ -77,10 +77,10 @@ export default function DiceRoller({ rolling, onComplete }: DiceRollerProps) {
             <style jsx>{`
                 @keyframes spin-3d {
                     0% { transform: rotate3d(1, 1, 1, 0deg); }
-                    100% { transform: rotate3d(1, 1, 1, 720deg); }
+                    100% { transform: rotate3d(1, 1, 1, 1080deg); }
                 }
                 .animate-spin-3d {
-                    animation: spin-3d 0.5s linear infinite;
+                    animation: spin-3d 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
                 }
             `}</style>
         </div>
