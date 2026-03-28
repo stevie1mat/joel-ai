@@ -301,13 +301,18 @@ export default function GameUIPage() {
                 const updates = data.gameStateUpdates;
                 const xpAdded = typeof updates.xpEarned === 'number' ? updates.xpEarned : 0;
                 const hpChange = typeof updates.hpChange === 'number' ? updates.hpChange : 0;
+                const goldChange = typeof updates.goldChange === 'number' ? updates.goldChange : 0;
                 
                 if (xpAdded > 0) showToast(`+${xpAdded} XP earned!`, 'success');
                 if (hpChange > 0) showToast(`+${hpChange} HP recovered!`, 'success');
                 if (hpChange < 0) showToast(`${hpChange} HP lost!`, 'error');
+                if (goldChange !== 0) showToast(`${goldChange > 0 ? '+' : ''}${goldChange} Gold!`, 'info');
                 
                 if (updates.newItems && Array.isArray(updates.newItems)) {
-                    updates.newItems.forEach((item: string) => showToast(`Found: ${item}`, 'success'));
+                    updates.newItems.forEach((item: any) => {
+                        const itemName = typeof item === 'string' ? item : (item.name || 'Unknown Item');
+                        showToast(`Found: ${itemName}`, 'success');
+                    });
                     // 🔥 Sync inventory locally
                     if (character?.id) {
                         loadInventoryData(character.id);
@@ -321,6 +326,7 @@ export default function GameUIPage() {
                     return {
                         ...prev,
                         xp: (prev.xp || 0) + xpAdded,
+                        gold: (prev.gold || 0) + goldChange,
                         current_hp: Math.max(0, Math.min(maxHp, (prev.current_hp || maxHp) + hpChange))
                     };
                 });
