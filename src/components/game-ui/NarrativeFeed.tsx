@@ -23,7 +23,7 @@ export default function NarrativeFeed({ items, isProcessing = false, onAction }:
                                     <p className="font-[family-name:var(--font-lato)] text-sm text-[#ffb74d] leading-relaxed italic">
                                         {item.content}
                                     </p>
-                                    <span className="block text-right text-[10px] text-[#ffb74d]/40 mt-1 tracking-wider uppercase">
+                                    <span className="block text-right text-[10px] text-[#ffb74d]/40 mt-1 tracking-wider">
                                         You · {item.timestamp}
                                     </span>
                                 </div>
@@ -67,7 +67,7 @@ export default function NarrativeFeed({ items, isProcessing = false, onAction }:
                                                     className="group relative overflow-hidden bg-black/60 border border-white/10 hover:border-[#ffb74d]/50 rounded-lg p-6 text-left transition-all hover:bg-black/80 hover:scale-[1.02]"
                                                 >
                                                     <div className="flex justify-between items-start mb-2">
-                                                        <span className="text-[10px] font-bold text-[#ffb74d] tracking-widest uppercase">{choice.title}</span>
+                                                        <span className="text-[10px] font-bold text-[#ffb74d] tracking-widest">{choice.title}</span>
                                                         <svg className="w-3 h-3 text-[#ffb74d] opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                                                         </svg>

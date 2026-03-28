@@ -342,7 +342,7 @@ export default function GameUIPage() {
     };
 
     return (
-        <div className="h-screen w-screen bg-black relative overflow-hidden font-[family-name:var(--font-cinzel)]">
+        <div className="h-screen w-screen bg-black relative overflow-hidden font-[family-name:var(--font-lato)]">
 
             <style jsx>{`
                 @keyframes pulse-slow {
@@ -626,7 +626,7 @@ export default function GameUIPage() {
 
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 py-3 border-b border-[#ffb74d]/10 shrink-0">
-                    <span className="text-[#ffb74d]/60 font-[family-name:var(--font-cinzel)] text-sm tracking-[0.3em] uppercase">
+                    <span className="text-[#ffb74d]/60 font-[family-name:var(--font-cinzel)] text-sm tracking-[0.2em]">
                         Chronicles
                     </span>
                     <div className="flex gap-2">

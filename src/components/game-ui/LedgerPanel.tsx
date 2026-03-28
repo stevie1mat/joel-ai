@@ -101,7 +101,7 @@ export default function LedgerPanel({ character, characterId, characterClass, al
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`flex-1 py-4 text-[13px] font-bold tracking-[0.15em] uppercase transition-all duration-300 flex items-center justify-center gap-2 ${
+                        className={`flex-1 py-4 text-[13px] font-bold tracking-[0.1em] transition-all duration-300 flex items-center justify-center gap-2 ${
                             activeTab === tab.id
                                 ? 'bg-[#ffb74d]/15 text-[#ffb74d] border-b-2 border-[#ffb74d] shadow-[inset_0_-8px_12px_rgba(255,183,77,0.05)]'
                                 : 'text-zinc-600 hover:text-zinc-300 hover:bg-white/5'
@@ -139,7 +139,7 @@ export default function LedgerPanel({ character, characterId, characterClass, al
                                 <button
                                     onClick={handleRegenerate}
                                     disabled={generating || !characterId}
-                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-widest uppercase transition-all
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-widest transition-all
                                         ${generating
                                             ? 'bg-black/70 text-[#ffb74d]/50 cursor-not-allowed'
                                             : saved
@@ -175,7 +175,7 @@ export default function LedgerPanel({ character, characterId, characterClass, al
                                             <span className="text-2xl text-[#ffb74d]/70">✦</span>
                                         </div>
                                     </div>
-                                    <p className="text-[#ffb74d] text-xs font-bold tracking-widest uppercase font-[family-name:var(--font-cinzel)]">
+                                    <p className="text-[#ffb74d] text-xs font-bold tracking-widest font-[family-name:var(--font-cinzel)]">
                                         Summoning Likeness...
                                     </p>
                                     <p className="text-zinc-500 text-[10px] mt-1 italic">This may take a moment</p>
@@ -194,7 +194,7 @@ export default function LedgerPanel({ character, characterId, characterClass, al
                                 <h2 className="text-2xl font-bold text-white mb-1 font-[family-name:var(--font-cinzel)]">
                                     {character.name.split(' ')[0]}
                                 </h2>
-                                <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] text-[#ffb74d] uppercase mb-4">
+                                <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.1em] text-[#ffb74d] mb-4">
                                     <span>{character.race}</span>
                                     <span className="w-1 h-1 rounded-full bg-zinc-600" />
                                     <span>{character.class}</span>
@@ -206,7 +206,7 @@ export default function LedgerPanel({ character, characterId, characterClass, al
                                         { label: '♥', value: character.hp.current },
                                     ].map(({ label, value }) => (
                                         <div key={label} className="bg-black/50 backdrop-blur-md px-2.5 py-1.5 rounded flex items-center gap-1.5 border border-white/10">
-                                            <span className="text-[9px] font-bold text-zinc-400 uppercase">{label}</span>
+                                            <span className="text-[9px] font-bold text-zinc-400">{label}</span>
                                             <span className="text-xs font-bold text-white">{value}</span>
                                         </div>
                                     ))}
@@ -217,7 +217,7 @@ export default function LedgerPanel({ character, characterId, characterClass, al
                         {/* XP */}
                         <div className="bg-[#13141c] p-4 rounded-xl border border-white/5">
                             <div className="flex justify-between items-center mb-2">
-                                <span className="text-xs font-bold text-emerald-400 tracking-widest uppercase">Experience</span>
+                                <span className="text-xs font-bold text-emerald-400 tracking-widest">Experience</span>
                                 <span className="text-[10px] text-zinc-500">{character.xp} / {(character.level * 1000)} XP</span>
                             </div>
                             <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
@@ -230,7 +230,7 @@ export default function LedgerPanel({ character, characterId, characterClass, al
 
                         {/* Background */}
                         <div className="bg-[#13141c] p-4 rounded-xl border border-white/5">
-                            <p className="text-xs font-bold text-[#ffb74d]/60 tracking-widest uppercase mb-1">Background</p>
+                            <p className="text-xs font-bold text-[#ffb74d]/60 tracking-widest mb-1">Background</p>
                             <p className="text-xs text-zinc-300">{character.background}</p>
                         </div>
                     </div>
@@ -239,14 +239,14 @@ export default function LedgerPanel({ character, characterId, characterClass, al
                 {/* ── STATS TAB ── */}
                 {activeTab === 'stats' && (
                     <div className="p-4 space-y-4">
-                        <p className="text-xs font-bold text-[#ffb74d]/60 tracking-widest uppercase">Core Attributes</p>
+                        <p className="text-xs font-bold text-[#ffb74d]/60 tracking-widest">Core Attributes</p>
                         <div className="grid grid-cols-3 gap-2">
                             {Object.entries(STAT_LABELS).map(([key, abbr]) => {
                                 const val = (character.stats as any)?.[key] ?? 10;
                                 const mod = modifier(val);
                                 return (
                                     <div key={key} className="bg-[#13141c] rounded-xl border border-white/5 p-3 flex flex-col items-center gap-1">
-                                        <span className="text-xs font-bold text-zinc-500 tracking-widest uppercase">{abbr}</span>
+                                        <span className="text-xs font-bold text-zinc-500 tracking-widest">{abbr}</span>
                                         <span className="text-2xl font-bold text-white font-[family-name:var(--font-cinzel)]">{val}</span>
                                         <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${parseInt(mod) >= 0 ? 'bg-emerald-900/50 text-emerald-400' : 'bg-red-900/50 text-red-400'}`}>
                                             {mod}
@@ -256,7 +256,7 @@ export default function LedgerPanel({ character, characterId, characterClass, al
                             })}
                         </div>
 
-                        <p className="text-xs font-bold text-[#ffb74d]/60 tracking-widest uppercase pt-2">Combat</p>
+                        <p className="text-xs font-bold text-[#ffb74d]/60 tracking-widest pt-2">Combat</p>
                         <div className="space-y-2">
                             {[
                                 { label: 'Armor Class', value: character.ac, icon: '🛡' },
@@ -294,7 +294,7 @@ export default function LedgerPanel({ character, characterId, characterClass, al
                 {activeTab === 'inventory' && (
                     <div className="p-4 space-y-3">
                         <div className="flex items-center justify-between">
-                            <p className="text-xs font-bold text-[#ffb74d]/60 tracking-widest uppercase">Carried Items</p>
+                            <p className="text-xs font-bold text-[#ffb74d]/60 tracking-widest">Carried Items</p>
                             <span className="text-xs text-zinc-600">{inventory.length} / 20 slots</span>
                         </div>
 

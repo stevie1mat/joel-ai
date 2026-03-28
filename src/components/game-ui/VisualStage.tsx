@@ -65,7 +65,7 @@ export default function VisualStage({ imageSrc, caption, parallaxX = 0, parallax
                                         </span>
                                     </div>
                                 </div>
-                                <p className="text-[#ffb74d] font-[family-name:var(--font-cinzel)] text-sm tracking-[0.3em] uppercase mb-2">
+                                <p className="text-[#ffb74d] font-[family-name:var(--font-cinzel)] text-sm tracking-[0.2em] mb-2">
                                     Weaving the Realm...
                                 </p>
                                 <p className="text-zinc-500 font-[family-name:var(--font-lato)] text-xs tracking-widest italic">
@@ -218,7 +218,7 @@ export default function VisualStage({ imageSrc, caption, parallaxX = 0, parallax
                         </div>
                     </div>
                     <div className="text-center px-6">
-                        <p className="text-[#ffb74d]/70 font-[family-name:var(--font-cinzel)] text-sm tracking-[0.4em] uppercase mb-2">
+                        <p className="text-[#ffb74d]/70 font-[family-name:var(--font-cinzel)] text-sm tracking-[0.3em] mb-2">
                             The Vision Awaits
                         </p>
                         <p className="text-zinc-600 font-[family-name:var(--font-lato)] text-xs tracking-widest italic leading-relaxed">
