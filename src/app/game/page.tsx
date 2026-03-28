@@ -118,6 +118,21 @@ export default function GameUIPage() {
         setActivePanel(prev => prev === panel ? 'none' : panel);
     };
 
+    const loadInventoryData = async (charId: string) => {
+        const { data, error } = await supabase
+            .from('character_inventory')
+            .select('*, item_templates (*)')
+            .eq('character_id', charId);
+
+        if (!error && data) {
+            setInventory(data.map(row => ({
+                id: row.id,
+                quantity: row.quantity,
+                ...row.item_templates
+            })));
+        }
+    };
+
     // Load character, inventory, and history in one unified flow
     const loadCharacterData = async () => {
         try {
@@ -144,11 +159,8 @@ export default function GameUIPage() {
 
             // 2. Fetch inventory & history in parallel
             setHistoryLoading(true);
-            const [invRes, histRes] = await Promise.all([
-                supabase
-                    .from('character_inventory')
-                    .select('*, item_templates (*)')
-                    .eq('character_id', data.id),
+            const [_, histRes] = await Promise.all([
+                loadInventoryData(data.id),
                 supabase
                     .from('narrative_history')
                     .select('*')
@@ -177,15 +189,6 @@ export default function GameUIPage() {
                 }
             };
             setCharacter(char);
-
-            // Set inventory
-            if (invRes.data) {
-                setInventory(invRes.data.map(row => ({
-                    id: row.id,
-                    quantity: row.quantity,
-                    ...row.item_templates
-                })));
-            }
 
             // Set history
             if (histRes.data && histRes.data.length > 0) {
@@ -303,8 +306,10 @@ export default function GameUIPage() {
                 
                 if (updates.newItems && Array.isArray(updates.newItems)) {
                     updates.newItems.forEach((item: string) => showToast(`Found: ${item}`, 'success'));
-                    // We might want to refresh inventory if items change, 
-                    // but for now let's keep it simple or trigger a focused inv load
+                    // 🔥 Sync inventory locally
+                    if (character?.id) {
+                        loadInventoryData(character.id);
+                    }
                 }
 
                 // Update character locally without a full re-fetch

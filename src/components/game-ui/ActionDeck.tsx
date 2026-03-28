@@ -21,11 +21,55 @@ export default function ActionDeck({ inventory, onAction, rolling, onRollStart }
         }
     };
 
-    return (
-        <div className="flex flex-col gap-6 w-full max-w-5xl mx-auto">
-            {/* Input Area */}
-            <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-xl p-4 shadow-2xl">
+    const handleItemClick = (itemName: string) => {
+        if (rolling) return;
+        const useText = `I use the ${itemName}. `;
+        setInput(prev => {
+            const trimmed = prev.trim();
+            if (!trimmed) return useText;
+            return `${trimmed}\n${useText}`;
+        });
+    };
 
+    const rarityColor: Record<string, string> = {
+        common: 'border-zinc-700 text-zinc-400 bg-zinc-900/40',
+        uncommon: 'border-emerald-900/50 text-emerald-400 bg-emerald-950/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]',
+        rare: 'border-blue-900/50 text-blue-400 bg-blue-950/20 shadow-[0_0_10px_rgba(59,130,246,0.1)]',
+        'very rare': 'border-purple-900/50 text-purple-400 bg-purple-950/20 shadow-[0_0_10px_rgba(168,85,247,0.1)]',
+        legendary: 'border-[#ffb74d]/30 text-[#ffb74d] bg-[#ffb74d]/5 shadow-[0_0_15px_rgba(255,183,77,0.15)]',
+    };
+
+    return (
+        <div className="flex flex-col gap-3 w-full max-w-5xl mx-auto">
+            {/* Quick Item Ribbon */}
+            {inventory.length > 0 && (
+                <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide px-1">
+                    <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest shrink-0 mr-1">
+                        Pouch:
+                    </span>
+                    {inventory.map((item, idx) => {
+                        const rarity = (item.rarity || 'common').toLowerCase();
+                        return (
+                            <button
+                                key={`${item.id}-${idx}`}
+                                onClick={() => handleItemClick(item.name)}
+                                disabled={rolling}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[11px] font-bold whitespace-nowrap transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
+                                    ${rarityColor[rarity] || rarityColor.common}
+                                `}
+                            >
+                                <span className="opacity-70 text-sm">
+                                    {item.type === 'weapon' || item.type === 'Weapon' ? '⚔' : item.type === 'armor' || item.type === 'Armor' ? '🛡' : item.type === 'Potion' ? '🧪' : '📦'}
+                                </span>
+                                {item.name}
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
+
+            {/* Input Area */}
+            <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-xl p-4 shadow-2xl relative">
                 {/* Text Input */}
                 <div className="relative">
                     <textarea
@@ -42,7 +86,7 @@ export default function ActionDeck({ inventory, onAction, rolling, onRollStart }
                         className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-[#ffb74d]/50 focus:ring-1 focus:ring-[#ffb74d]/50 resize-none h-20 text-base pr-12 transition-all disabled:opacity-50"
                     />
 
-                    {/* Submit Button (Arrow) - Positioned inside textarea area */}
+                    {/* Submit Button (Arrow) */}
                     <button
                         onClick={handleSubmit}
                         disabled={!input.trim() || rolling}
