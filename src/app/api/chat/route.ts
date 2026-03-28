@@ -194,23 +194,98 @@ export async function POST(req: NextRequest) {
             }
         }
 
-        if (newItems && Array.isArray(newItems)) {
+        // --- Handle Inventory Updates ---
+        if (newItems && Array.isArray(newItems) && newItems.length > 0) {
             for (const itemName of newItems) {
-                const { data: template } = await supabase
-                    .from('item_templates')
-                    .select('id')
-                    .ilike('name', `%${itemName}%`)
-                    .limit(1)
-                    .single();
+                try {
+                    console.log(`Processing new item: ${itemName}`);
+                    
+                    // 1. Find or create item template
+                    let { data: template, error: templateErr } = await supabase
+                        .from('item_templates')
+                        .select('id')
+                        .ilike('name', itemName)
+                        .maybeSingle();
 
-                if (template) {
-                    await supabase
-                        .from('character_inventory')
-                        .insert({ character_id: characterId, item_template_id: template.id });
-                    console.log(`Added item: ${itemName}`);
+                    if (!template) {
+                        console.log(`No template found for "${itemName}". Creating one...`);
+                        const { data: newTemplate, error: createErr } = await supabase
+                            .from('item_templates')
+                            .insert({
+                                name: itemName,
+                                description: `A newly discovered item: ${itemName}`,
+                                type: 'General',
+                                rarity: 'Common'
+                            })
+                            .select('id')
+                            .single();
+                        
+                        if (createErr) throw createErr;
+                        template = newTemplate;
+                    }
+
+                    if (template) {
+                        // 2. Add to character inventory (upsert quantity)
+                        const { data: existing, error: existErr } = await supabase
+                            .from('character_inventory')
+                            .select('id, quantity')
+                            .eq('character_id', characterId)
+                            .eq('item_template_id', template.id)
+                            .maybeSingle();
+
+                        if (existing) {
+                            await supabase
+                                .from('character_inventory')
+                                .update({ quantity: (existing.quantity || 1) + 1 })
+                                .eq('id', existing.id);
+                        } else {
+                            await supabase
+                                .from('character_inventory')
+                                .insert({
+                                    character_id: characterId,
+                                    item_template_id: template.id,
+                                    quantity: 1
+                                });
+                        }
+                    }
+                } catch (err) {
+                    console.error(`Error processing item "${itemName}":`, err);
                 }
             }
         }
+
+        if (removedItems && Array.isArray(removedItems) && removedItems.length > 0) {
+            // ... Similar logic to find template and decrement quantity ...
+            for (const itemName of removedItems) {
+                const { data: template } = await supabase
+                    .from('item_templates')
+                    .select('id')
+                    .ilike('name', itemName)
+                    .maybeSingle();
+                
+                if (template) {
+                    const { data: existing } = await supabase
+                        .from('character_inventory')
+                        .select('id, quantity')
+                        .eq('character_id', characterId)
+                        .eq('item_template_id', template.id)
+                        .maybeSingle();
+                    
+                    if (existing && existing.quantity > 1) {
+                        await supabase
+                            .from('character_inventory')
+                            .update({ quantity: existing.quantity - 1 })
+                            .eq('id', existing.id);
+                    } else if (existing) {
+                        await supabase
+                            .from('character_inventory')
+                            .delete()
+                            .eq('id', existing.id);
+                    }
+                }
+            }
+        }
+
 
         let imageUrl = "";
         if (imagePrompt) {

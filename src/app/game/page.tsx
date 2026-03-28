@@ -41,6 +41,8 @@ export default function GameUIPage() {
     const [showSettings, setShowSettings] = useState(false);
     const [rolling, setRolling] = useState(false);
     const [pendingAction, setPendingAction] = useState<string | null>(null);
+    const [historyLoading, setHistoryLoading] = useState(false);
+    const hasLoadedHistory = useRef<string | null>(null);
 
     // ── Keyboard-driven character movement ──
     const [charPosX, setCharPosX] = useState(50); // percentage across stage
@@ -116,17 +118,16 @@ export default function GameUIPage() {
         setActivePanel(prev => prev === panel ? 'none' : panel);
     };
 
-    // Load character data and inventory on mount
-    const loadCharacter = async () => {
+    // Load character, inventory, and history in one unified flow
+    const loadCharacterData = async () => {
         try {
             const { data: { user } } = await supabase.auth.getUser();
-
             if (!user) {
                 router.push('/login');
                 return;
             }
 
-            // Get the most recent character for this user
+            // 1. Fetch character
             const { data, error } = await supabase
                 .from('characters')
                 .select('*')
@@ -135,109 +136,97 @@ export default function GameUIPage() {
                 .limit(1)
                 .single();
 
-            if (error) {
+            if (error || !data) {
                 console.error('Error loading character:', error);
                 showToast('Failed to load character data.', 'error');
                 return;
             }
 
-            if (data) {
-                // Transform database format to Character interface
-                const char: Character = {
-                    id: data.id,
-                    user_id: data.user_id,
-                    name: data.name,
-                    class: data.class,
-                    level: data.level,
-                    xp: data.xp || 0,
-                    current_hp: data.current_hp,
-                    allegiance: data.allegiance,
-                    avatar_url: data.avatar_url,
-                    stats: {
-                        strength: data.strength,
-                        dexterity: data.dexterity,
-                        constitution: data.constitution,
-                        intelligence: data.intelligence,
-                        wisdom: data.wisdom,
-                        charisma: data.charisma
-                    }
-                };
-                setCharacter(char);
-                await loadInventory(data.id);
+            // 2. Fetch inventory & history in parallel
+            setHistoryLoading(true);
+            const [invRes, histRes] = await Promise.all([
+                supabase
+                    .from('character_inventory')
+                    .select('*, item_templates (*)')
+                    .eq('character_id', data.id),
+                supabase
+                    .from('narrative_history')
+                    .select('*')
+                    .eq('character_id', data.id)
+                    .order('created_at', { ascending: true })
+            ]);
+
+            // Set character state
+            const char: Character = {
+                id: data.id,
+                user_id: data.user_id,
+                name: data.name,
+                class: data.class,
+                level: data.level,
+                xp: data.xp || 0,
+                current_hp: data.current_hp,
+                allegiance: data.allegiance,
+                avatar_url: data.avatar_url,
+                stats: {
+                    strength: data.strength,
+                    dexterity: data.dexterity,
+                    constitution: data.constitution,
+                    intelligence: data.intelligence,
+                    wisdom: data.wisdom,
+                    charisma: data.charisma
+                }
+            };
+            setCharacter(char);
+
+            // Set inventory
+            if (invRes.data) {
+                setInventory(invRes.data.map(row => ({
+                    id: row.id,
+                    quantity: row.quantity,
+                    ...row.item_templates
+                })));
             }
+
+            // Set history
+            if (histRes.data && histRes.data.length > 0) {
+                const historyItems: NarrativeItem[] = histRes.data.map(record => ({
+                    id: record.id,
+                    type: (record.metadata as any)?.type || 'narrative',
+                    role: record.role as 'user' | 'assistant',
+                    content: record.content,
+                    isVerified: true,
+                    timestamp: new Date(record.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    imageUrl: (record.metadata as any)?.imageUrl,
+                }));
+                setNarrative(historyItems);
+                
+                // Restore last animations
+                const lastAiResponse = [...histRes.data].reverse().find(r => r.role === 'assistant');
+                if ((lastAiResponse?.metadata as any)?.animations) {
+                    setAnimations((lastAiResponse.metadata as any).animations);
+                }
+            }
+
         } catch (err) {
-            console.error('Failed to load character:', err);
-            showToast('Network error loading character.', 'error');
+            console.error('Failed to load game state:', err);
+            showToast('Network error loading realm.', 'error');
             router.push('/character-creation');
         } finally {
+            setHistoryLoading(false);
             setLoading(false);
         }
     };
 
-    const loadInventory = async (charId: string) => {
-        const { data, error } = await supabase
-            .from('character_inventory')
-            .select(`
-                *,
-                item_templates (*)
-            `)
-            .eq('character_id', charId);
-
-        if (!error && data) {
-            const mapped = data.map(row => ({
-                id: row.id,
-                quantity: row.quantity,
-                ...row.item_templates
-            }));
-            setInventory(mapped);
-        }
-    };
-
     useEffect(() => {
-        loadCharacter();
+        loadCharacterData();
     }, [router]);
 
-
-    // Load History separately dependent on character
+    // Initial prompt generation - Only if no history exists and we've checked the DB
     useEffect(() => {
-        const loadHistory = async () => {
-            if (!character) return;
-
-            const { data } = await supabase
-                .from('narrative_history')
-                .select('*')
-                .eq('character_id', character.id)
-                .order('created_at', { ascending: true });
-
-            if (data && data.length > 0) {
-                const historyItems: NarrativeItem[] = data.map(record => ({
-                    id: record.id,
-                    type: record.metadata?.type || 'narrative',
-                    content: record.content,
-                    result: record.role === 'assistant' ? 'AI DM Response' : undefined,
-                    isVerified: true,
-                    timestamp: new Date(record.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                    imageUrl: record.metadata?.imageUrl,
-                }));
-                setNarrative(historyItems);
-
-                // Restore last animations if available
-                const lastAiResponse = [...data].reverse().find(r => r.role === 'assistant');
-                if (lastAiResponse?.metadata?.animations) {
-                    setAnimations(lastAiResponse.metadata.animations);
-                }
-            }
-        };
-
-        loadHistory();
-    }, [character]);
-
-    // Initial prompt generation - Only if no history exists
-    useEffect(() => {
-        if (character && narrative.length === 0 && !isProcessing && !loading) {
+        if (character && narrative.length === 0 && !isProcessing && !loading && !historyLoading) {
             handleAction("Begin the adventure");
         }
-    }, [character, isProcessing, loading]);
+    }, [character?.id, isProcessing, loading, historyLoading]);
 
     // Derive the active visual from the latest narrative item that has one
     const activeVisualItem = [...narrative].reverse().find(item => item.imageUrl || item.portraitId);
@@ -305,20 +294,30 @@ export default function GameUIPage() {
 
             if (data.gameStateUpdates) {
                 const updates = data.gameStateUpdates;
-                const xp = typeof updates.xpEarned === 'number' ? updates.xpEarned : 0;
-                const hp = typeof updates.hpChange === 'number' ? updates.hpChange : 0;
+                const xpAdded = typeof updates.xpEarned === 'number' ? updates.xpEarned : 0;
+                const hpChange = typeof updates.hpChange === 'number' ? updates.hpChange : 0;
                 
-                if (xp > 0) showToast(`+${xp} XP earned!`, 'success');
-                if (hp > 0) showToast(`+${hp} HP recovered!`, 'success');
-                if (hp < 0) showToast(`${hp} HP lost!`, 'error');
+                if (xpAdded > 0) showToast(`+${xpAdded} XP earned!`, 'success');
+                if (hpChange > 0) showToast(`+${hpChange} HP recovered!`, 'success');
+                if (hpChange < 0) showToast(`${hpChange} HP lost!`, 'error');
                 
                 if (updates.newItems && Array.isArray(updates.newItems)) {
                     updates.newItems.forEach((item: string) => showToast(`Found: ${item}`, 'success'));
+                    // We might want to refresh inventory if items change, 
+                    // but for now let's keep it simple or trigger a focused inv load
                 }
-            }
 
-            // 🔥 Refresh character data and inventory after action to sync game state
-            await loadCharacter();
+                // Update character locally without a full re-fetch
+                setCharacter(prev => {
+                    if (!prev) return prev;
+                    const maxHp = 10 + Math.floor(((prev.stats.constitution || 10) - 10) / 2);
+                    return {
+                        ...prev,
+                        xp: (prev.xp || 0) + xpAdded,
+                        current_hp: Math.max(0, Math.min(maxHp, (prev.current_hp || maxHp) + hpChange))
+                    };
+                });
+            }
 
         } catch (error: any) {
             console.error('Action error:', error);
@@ -338,6 +337,37 @@ export default function GameUIPage() {
         if (pendingAction) {
             handleAction(`${pendingAction} [Rolled: ${result}]`);
             setPendingAction(null);
+        }
+    };
+
+    const handleReset = async () => {
+        if (!character) return;
+        
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            const response = await fetch('/api/game/reset', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    characterId: character.id,
+                    userId: user.id
+                })
+            });
+
+            if (response.ok) {
+                showToast('Progress reset successfully.', 'success');
+                // Clear and reload
+                setNarrative([]);
+                await loadCharacterData();
+                setShowSettings(false);
+            } else {
+                showToast('Failed to reset progress.', 'error');
+            }
+        } catch (err) {
+            console.error('Reset error:', err);
+            showToast('Error resetting realm.', 'error');
         }
     };
 
@@ -721,7 +751,11 @@ export default function GameUIPage() {
             )}
 
             {/* Settings Modal */}
-            <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
+            <SettingsModal 
+                isOpen={showSettings} 
+                onClose={() => setShowSettings(false)} 
+                onReset={handleReset}
+            />
         </div>
     );
 }

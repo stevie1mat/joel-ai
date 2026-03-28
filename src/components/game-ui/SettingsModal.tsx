@@ -4,9 +4,12 @@ import React from 'react';
 interface SettingsModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onReset?: () => void;
 }
 
-export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
+export default function SettingsModal({ isOpen, onClose, onReset }: SettingsModalProps) {
+    const [confirmReset, setConfirmReset] = React.useState(false);
+
     if (!isOpen) return null;
 
     return (
@@ -48,11 +51,48 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     </div>
 
                     {/* Graphics */}
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between pb-6 border-b border-white/5">
                         <span className="text-sm text-zinc-300">High Quality Visuals</span>
-                        <div className="w-10 h-5 bg-green-500 rounded-full relative cursor-pointer">
+                        <div className="w-10 h-5 bg-emerald-500 rounded-full relative cursor-pointer opacity-50 cursor-not-allowed">
                             <div className="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div>
                         </div>
+                    </div>
+
+                    {/* Reset Progress */}
+                    <div className="pt-4 space-y-4">
+                        <div className="flex flex-col gap-2">
+                            <span className="text-xs font-bold text-red-500 uppercase tracking-wider">Danger Zone</span>
+                            <p className="text-[10px] text-zinc-500 leading-relaxed italic">
+                                This will permanently delete your chat history, inventory, and reset your level/stats. This action cannot be undone.
+                            </p>
+                        </div>
+                        
+                        {!confirmReset ? (
+                            <button
+                                onClick={() => setConfirmReset(true)}
+                                className="w-full py-2 bg-red-500/10 border border-red-500/30 text-red-500 rounded hover:bg-red-500/20 transition-all text-[10px] font-bold tracking-widest uppercase"
+                            >
+                                Reset Character Progress
+                            </button>
+                        ) : (
+                            <div className="flex gap-2 animate-fadeIn">
+                                <button
+                                    onClick={() => {
+                                        if (onReset) onReset();
+                                        setConfirmReset(false);
+                                    }}
+                                    className="flex-1 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-all text-[10px] font-bold tracking-widest uppercase shadow-lg shadow-red-900/20"
+                                >
+                                    CONFIRM
+                                </button>
+                                <button
+                                    onClick={() => setConfirmReset(false)}
+                                    className="flex-1 py-2 bg-white/5 text-zinc-400 rounded hover:bg-white/10 transition-all text-[10px] font-bold tracking-widest uppercase"
+                                >
+                                    CANCEL
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
 
