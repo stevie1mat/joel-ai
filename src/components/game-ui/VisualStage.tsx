@@ -95,7 +95,7 @@ export default function VisualStage({ imageSrc, caption }: VisualStageProps) {
                 </>
             ) : (
                 /* ── First-load / empty state ── */
-                <div className="w-full h-full flex flex-col items-center justify-center gap-6 bg-gradient-to-b from-black/80 to-[#0d0e14]">
+                <div className="w-full h-full flex flex-col items-center justify-center gap-6 bg-gradient-to-b from-black/80 to-[#0d0e14] pr-[34%]">
                     {/* Animated sigil */}
                     <div className="relative w-24 h-24">
                         <div

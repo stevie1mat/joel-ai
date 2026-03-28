@@ -339,17 +339,6 @@ export default function GameUIPage() {
                             <div className="absolute inset-0 rounded-full ring-2 ring-[#ffb74d]/50 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </button>
 
-                        {/* Inventory Toggle */}
-                        <button
-                            onClick={() => togglePanel('inventory')}
-                            className={`group relative p-2 rounded-full transition-all duration-300 ${activePanel === 'inventory' ? 'bg-[#ef4444]/20 scale-110' : 'bg-black/40 hover:bg-black/60'}`}
-                            title="Inventory"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-[#ef4444] drop-shadow-[0_0_6px_rgba(239,68,68,0.5)]">
-                                <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.902 7.098a3.75 3.75 0 0 1 3.804 0l.001.001a6.75 6.75 0 0 1 3.844 3.844l.001.001a3.75 3.75 0 0 1 0 3.804l-.001.001a6.75 6.75 0 0 1-3.844 3.844l-.001.001a3.75 3.75 0 0 1-3.804 0l-.001-.001a6.75 6.75 0 0 1-3.844-3.844l-.001-.001a3.75 3.75 0 0 1 0-3.804l.001-.001a6.75 6.75 0 0 1 3.844-3.844l.001-.001Z" clipRule="evenodd" />
-                            </svg>
-                            <div className="absolute inset-0 rounded-full ring-2 ring-[#ef4444]/50 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </button>
                     </div>
                 </div>
 
@@ -374,15 +363,7 @@ export default function GameUIPage() {
                     </div>
                 )}
 
-                {activePanel === 'inventory' && character && (
-                    <div className="absolute inset-0 z-40 rounded-2xl bg-black/95 border border-[#ef4444]/30 shadow-2xl backdrop-blur-md overflow-y-auto">
-                        <button
-                            onClick={() => setActivePanel('none')}
-                            className="absolute top-3 right-3 p-1 text-[#ef4444]/60 hover:text-[#ef4444] transition-colors"
-                        >✕</button>
-                        <InventoryPanel characterId={character.id as string} />
-                    </div>
-                )}
+
             </div>
 
             {/* System Toast */}
