@@ -1,21 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Mistral } from '@mistralai/mistralai';
-import Bytez from 'bytez.js';
-
-// Configuration
-const BYTEZ_KEY = process.env.BYTEZ_API_KEY || "";
+import { generateImageUrl, isImageGenerationConfigured } from '@/lib/image-generation';
 
 // Initialize Clients
 const mistral = new Mistral({
     apiKey: process.env.MISTRAL_API_KEY || '',
 });
-
-let bytezModel: any = null;
-if (BYTEZ_KEY) {
-    const bytez = new Bytez(BYTEZ_KEY);
-    bytezModel = bytez.model(process.env.BYTEZ_IMAGE_MODEL || "stabilityai/stable-diffusion-xl-base-1.0");
-}
 
 const SYSTEM_PROMPT = `
 You are the Dungeon Master for a text-based RPG called Aether Chronicles, set in a dark fantasy world with amber-lit mystical themes.
@@ -54,6 +45,13 @@ Format your response as JSON:
   }
 }
 `;
+
+function buildFallbackImagePrompt(narrativeText: string) {
+    const normalized = narrativeText.replace(/\s+/g, ' ').trim();
+    const clipped = normalized.slice(0, 500);
+
+    return `Dark fantasy RPG scene, cinematic, atmospheric lighting, highly detailed: ${clipped}`;
+}
 
 export async function POST(req: NextRequest) {
     const supabase = createClient(
@@ -151,7 +149,7 @@ export async function POST(req: NextRequest) {
 
                 parsedResponse = JSON.parse(jsonStr);
                 narrative = parsedResponse.narrative || responseText;
-                imagePrompt = parsedResponse.imagePrompt || "";
+                imagePrompt = typeof parsedResponse.imagePrompt === 'string' ? parsedResponse.imagePrompt : "";
                 animations = { ...animations, ...parsedResponse.animations };
             } else {
                 console.warn("No JSON braces found in response");
@@ -160,6 +158,15 @@ export async function POST(req: NextRequest) {
         } catch (parseError) {
             console.error("JSON Parse Error:", parseError);
             narrative = responseText; // Ensure narrative degrades gracefully on error
+        }
+
+        const narrativeText = typeof narrative === 'string'
+            ? narrative
+            : JSON.stringify(narrative);
+
+        if (!imagePrompt.trim() && narrativeText.trim()) {
+            imagePrompt = buildFallbackImagePrompt(narrativeText);
+            console.log("imagePrompt missing from model response; using fallback prompt.");
         }
 
         // --- Handle Game State Updates ---
@@ -306,29 +313,18 @@ export async function POST(req: NextRequest) {
         let imageUrl = "";
         if (imagePrompt) {
             console.log(`Generating image for: ${imagePrompt}`);
-            if (!bytezModel) {
-                console.log("No Bytez API key found, skipping image generation.");
+            if (!isImageGenerationConfigured()) {
+                console.log("No image generator configured, skipping image generation.");
             } else {
                 try {
-                    // Bytez Documented Syntax
-                    const { error, output } = await bytezModel.run(imagePrompt);
-
-                    if (error) {
-                        console.error("Bytez API Error returned:", error);
-                    } else if (output) {
-                        // Some Bytez models return an array of images, others just a base64 string
-                        if (Array.isArray(output) && output.length > 0) {
-                            imageUrl = `data:image/png;base64,${output[0]}`;
-                        } else if (typeof output === 'string') {
-                            // If it's already a Data URI or URL
-                            imageUrl = output.startsWith('data:') || output.startsWith('http')
-                                ? output
-                                : `data:image/png;base64,${output}`;
-                        }
-                    }
+                    imageUrl = await generateImageUrl(imagePrompt, {
+                        folder: process.env.CLOUDINARY_SCENES_FOLDER || 'aether-chronicles/scenes',
+                    });
                     console.log("Image generation result:", imageUrl ? "Success" : "Failed");
                 } catch (imgError) {
                     console.error("Image Generation Exception:", imgError);
+                    // Last-resort visual fallback so gameplay still gets scene art.
+                    imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?nologo=true`;
                 }
             }
         }

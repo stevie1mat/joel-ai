@@ -1,19 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Bytez from 'bytez.js';
-
-const BYTEZ_KEY = process.env.BYTEZ_API_KEY || '';
-
-let bytezModel: any = null;
-if (BYTEZ_KEY) {
-    const bytez = new Bytez(BYTEZ_KEY);
-    bytezModel = bytez.model('google/imagen-4.0-generate-001');
-}
+import { generateImageUrl, isImageGenerationConfigured } from '@/lib/image-generation';
 
 export async function POST(req: NextRequest) {
     try {
         const { name, characterClass, race, allegiance } = await req.json();
 
-        if (!bytezModel) {
+        if (!isImageGenerationConfigured()) {
             return NextResponse.json({ error: 'Image generation is not configured.' }, { status: 503 });
         }
 
@@ -24,21 +16,9 @@ cinematic painting style, highly detailed, fantasy art. Dark background with mys
 
         console.log(`Generating portrait for: ${name} (${characterClass})`);
 
-        const { error, output } = await bytezModel.run(prompt);
-
-        if (error) {
-            console.error('Bytez portrait error:', error);
-            return NextResponse.json({ error: 'Image generation failed' }, { status: 500 });
-        }
-
-        let imageUrl = '';
-        if (Array.isArray(output) && output.length > 0) {
-            imageUrl = `data:image/png;base64,${output[0]}`;
-        } else if (typeof output === 'string') {
-            imageUrl = output.startsWith('data:') || output.startsWith('http')
-                ? output
-                : `data:image/png;base64,${output}`;
-        }
+        const imageUrl = await generateImageUrl(prompt, {
+            folder: process.env.CLOUDINARY_PORTRAITS_FOLDER || 'aether-chronicles/portraits',
+        });
 
         if (!imageUrl) {
             return NextResponse.json({ error: 'No image returned from generator' }, { status: 500 });
@@ -46,8 +26,9 @@ cinematic painting style, highly detailed, fantasy art. Dark background with mys
 
         return NextResponse.json({ imageUrl });
 
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error('Portrait generation error:', err);
-        return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
+        const message = err instanceof Error ? err.message : 'Internal Server Error';
+        return NextResponse.json({ error: message }, { status: 500 });
     }
 }

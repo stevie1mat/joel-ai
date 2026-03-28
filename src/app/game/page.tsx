@@ -571,6 +571,7 @@ export default function GameUIPage() {
                 <VisualStage
                     imageSrc={activeVisualSrc}
                     caption={activeCaption}
+                    isGenerating={isProcessing}
                     parallaxX={parallaxX}
                     parallaxY={parallaxY}
                 />

@@ -4,21 +4,60 @@ import React, { useState } from 'react';
 interface VisualStageProps {
     imageSrc?: string;
     caption?: string;
+    /** External generation/loading state from parent request lifecycle */
+    isGenerating?: boolean;
     /** Parallax offset X in pixels */
     parallaxX?: number;
     /** Parallax offset Y in pixels */
     parallaxY?: number;
 }
 
-export default function VisualStage({ imageSrc, caption, parallaxX = 0, parallaxY = 0 }: VisualStageProps) {
+export default function VisualStage({
+    imageSrc,
+    caption,
+    isGenerating = false,
+    parallaxX = 0,
+    parallaxY = 0
+}: VisualStageProps) {
     const [imageLoading, setImageLoading] = useState(false);
     const [imageLoaded, setImageLoaded] = useState(false);
+    const showLoadingOverlay = isGenerating || imageLoading;
 
     React.useEffect(() => {
-        if (imageSrc) {
-            setImageLoading(true);
+        if (!imageSrc) {
+            setImageLoading(false);
             setImageLoaded(false);
+            return;
         }
+
+        let cancelled = false;
+        setImageLoading(true);
+        setImageLoaded(false);
+
+        // Some data-URI loads can behave inconsistently with onLoad timing.
+        // Preload explicitly and also add a timeout so the loader cannot remain forever.
+        const preload = new Image();
+        preload.onload = () => {
+            if (cancelled) return;
+            setImageLoading(false);
+            setImageLoaded(true);
+        };
+        preload.onerror = () => {
+            if (cancelled) return;
+            setImageLoading(false);
+            setImageLoaded(false);
+        };
+        preload.src = imageSrc;
+
+        const fallbackTimer = window.setTimeout(() => {
+            if (cancelled) return;
+            setImageLoading(false);
+        }, 12000);
+
+        return () => {
+            cancelled = true;
+            window.clearTimeout(fallbackTimer);
+        };
     }, [imageSrc]);
 
     const handleImageLoad = () => {
@@ -43,7 +82,7 @@ export default function VisualStage({ imageSrc, caption, parallaxX = 0, parallax
             {imageSrc ? (
                 <>
                     {/* ── Generating Scene overlay ── */}
-                    {imageLoading && (
+                    {showLoadingOverlay && (
                         <div className="absolute inset-0 flex items-center justify-center bg-black/90 z-10">
                             <div className="text-center px-8">
                                 <div className="relative w-20 h-20 mx-auto mb-6">
