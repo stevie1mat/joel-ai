@@ -60,7 +60,9 @@ export default function DiceRoller({ rolling, onComplete }: DiceRollerProps) {
                     {/* Result Layer */}
                     <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${isAnimating ? 'opacity-0 scale-50' : 'opacity-100 scale-100'}`}>
                         <D20Icon className="w-full h-full text-[#ffb74d] drop-shadow-[0_0_10px_rgba(255,183,77,0.4)]" />
-                        <span className="absolute text-xl font-bold text-black font-[family-name:var(--font-cinzel)] mt-1">
+                        <span 
+                            className="absolute text-2xl font-black text-white font-[family-name:var(--font-cinzel)] mt-1 drop-shadow-[0_0_4px_black]"
+                        >
                             {displayValue}
                         </span>
                     </div>
