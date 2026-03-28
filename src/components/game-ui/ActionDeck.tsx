@@ -40,21 +40,22 @@ export default function ActionDeck({ inventory, onAction, rolling, onRollStart }
     };
 
     return (
-        <div className="flex flex-col gap-3 w-full max-w-5xl mx-auto">
-            {/* Quick Item Ribbon */}
-            {inventory.length > 0 && (
-                <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide px-1">
-                    <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest shrink-0 mr-1">
-                        Pouch:
-                    </span>
-                    {inventory.map((item, idx) => {
+        <div className="flex flex-col gap-2 w-full max-w-5xl mx-auto">
+            {/* Quick Item Ribbon / Pouch */}
+            <div className="flex items-center gap-2 px-1 overflow-x-auto pb-1 scrollbar-hide min-h-[38px]">
+                <span className="text-[10px] font-bold text-[#ffb74d]/50 uppercase tracking-[0.2em] shrink-0 mr-1 select-none">
+                    Pouch:
+                </span>
+                
+                {inventory.length > 0 ? (
+                    inventory.map((item, idx) => {
                         const rarity = (item.rarity || 'common').toLowerCase();
                         return (
                             <button
                                 key={`${item.id}-${idx}`}
                                 onClick={() => handleItemClick(item.name)}
                                 disabled={rolling}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[11px] font-bold whitespace-nowrap transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[11px] font-bold whitespace-nowrap transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed animate-burst-in
                                     ${rarityColor[rarity] || rarityColor.common}
                                 `}
                             >
@@ -64,12 +65,16 @@ export default function ActionDeck({ inventory, onAction, rolling, onRollStart }
                                 {item.name}
                             </button>
                         );
-                    })}
-                </div>
-            )}
+                    })
+                ) : (
+                    <span className="text-[10px] italic text-zinc-700 font-[family-name:var(--font-lato)] -mt-0.5">
+                        No equipment found yet...
+                    </span>
+                )}
+            </div>
 
             {/* Input Area */}
-            <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-xl p-4 shadow-2xl relative">
+            <div className="bg-black/80 backdrop-blur-xl border border-[#ffb74d]/10 rounded-xl p-4 shadow-[0_8px_32px_rgba(0,0,0,0.8)] relative group transition-all focus-within:border-[#ffb74d]/30">
                 {/* Text Input */}
                 <div className="relative">
                     <textarea
