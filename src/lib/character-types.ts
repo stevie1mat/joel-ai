@@ -14,6 +14,8 @@ export interface Character {
     class: string;
     stats: CharacterStats;
     level: number;
+    xp?: number;
+    current_hp?: number;
     allegiance?: string;
     avatar_url?: string;
 }

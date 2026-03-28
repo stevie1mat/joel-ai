@@ -22,6 +22,7 @@ export interface CharacterState {
     race: string;
     class: string;
     level: number;
+    xp: number;
     portraitId?: string;
     hp: { current: number; max: number; temp: number };
     ac: number;
@@ -36,6 +37,7 @@ export interface CharacterState {
 export interface NarrativeItem {
     id: string;
     type: 'narrative' | 'combat' | 'system';
+    role?: 'user' | 'assistant'; // Distinguishes player actions from DM narration
     content: string;
     result?: string; // e.g., "Roll: 19 (Success)"
     imageUrl?: string; // Direct URL override
@@ -61,6 +63,7 @@ export const mockCharacter: CharacterState = {
     race: "Drow",
     class: "Rogue",
     level: 5,
+    xp: 1200,
     portraitId: "npc_kaelen",
     hp: { current: 32, max: 45, temp: 0 },
     ac: 16,

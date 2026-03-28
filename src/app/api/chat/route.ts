@@ -14,30 +14,31 @@ const mistral = new Mistral({
 let bytezModel: any = null;
 if (BYTEZ_KEY) {
     const bytez = new Bytez(BYTEZ_KEY);
-    bytezModel = bytez.model("google/imagen-4.0-generate-001");
+    bytezModel = bytez.model("stabilityai/stable-diffusion-xl-base-1.0");
 }
 
 const SYSTEM_PROMPT = `
 You are the Dungeon Master for a text-based RPG called Aether Chronicles, set in a dark fantasy world with amber-lit mystical themes.
 Your role is to narrate the story, describe the environment, and determine the outcomes of the player's actions.
 Be descriptive, immersive, and fair. If the player attempts an action that requires a skill check, look for a "[Rolled: X]" tag in their input.
-If present, USE THAT VALUE to determine the outcome (e.g., high roll = success, low roll = failure).
-If no roll is provided, you may simulate one if needed.
-Keep your responses concise but evocative.
+If present, USE THAT VALUE to determine the outcome.
 
-IMPORTANT: Along with your narrative response, you MUST also provide a brief image description for scene visualization AND environmental animation flags.
-Format your response as JSON with three fields:
+IMPORTANT: Along with your narrative response, you MUST also provide a brief image description for scene visualization and environmental animation flags.
+Crucially, you must also provide game state updates if the player's action resulted in health changes, experience gain, or finding/losing items.
+
+Format your response as JSON with these fields:
 {
   "narrative": "Your narrative response here...",
-  "imagePrompt": "Brief visual description for AI image generation (e.g., 'dark fantasy tavern with amber lighting, mysterious hooded figures')",
+  "imagePrompt": "Brief visual description for AI image generation",
   "animations": {
-    "flickering_light": true/false, // Torches, fires, unstable light
-    "windy_foliage": true/false, // Wind, moving trees, dust
-    "rain": true/false, // Rain, storms, wet environments
-    "snow": true/false, // Snow, cold environments
-    "fog": true/false, // Mist, fog, steam, spooky atmosphere
-    "embers": true/false, // Fire particles, ash, destruction
-    "lightning": true/false // Thunderstorms, magical flashes
+    "flickering_light": boolean, "windy_foliage": boolean, "rain": boolean, "snow": boolean,
+    "fog": boolean, "embers": boolean, "lightning": boolean
+  },
+  "gameStateUpdates": {
+    "hpChange": number,      // e.g., -5 for damage, +10 for healing. Use 0 if no change.
+    "xpEarned": number,      // e.g., 50 for completing a task. Use 0 if no change.
+    "newItems": string[],    // Array of item names to add (must match basic names like 'Healing Potion', 'Longsword', 'Leather Armor', 'Torch')
+    "removedItems": string[] // Array of item names to remove
   }
 }
 `;
@@ -143,6 +144,48 @@ export async function POST(req: NextRequest) {
         } catch (parseError) {
             console.error("JSON Parse Error:", parseError);
             narrative = responseText; // Ensure narrative degrades gracefully on error
+        }
+
+        // --- Handle Game State Updates ---
+        const gameStateUpdates = parsedResponse.gameStateUpdates || {};
+        const { hpChange, xpEarned, newItems, removedItems } = gameStateUpdates;
+
+        if (hpChange || xpEarned) {
+            console.log(`Applying updates: HP ${hpChange}, XP ${xpEarned}`);
+            const { data: charData } = await supabase
+                .from('characters')
+                .select('current_hp, xp, constitution')
+                .eq('id', characterId)
+                .single();
+
+            if (charData) {
+                const currentHp = charData.current_hp ?? (10 + Math.floor(((charData.constitution || 10) - 10) / 2));
+                const newHp = Math.max(0, currentHp + (hpChange || 0));
+                const newXp = (charData.xp || 0) + (xpEarned || 0);
+
+                await supabase
+                    .from('characters')
+                    .update({ current_hp: newHp, xp: newXp })
+                    .eq('id', characterId);
+            }
+        }
+
+        if (newItems && Array.isArray(newItems)) {
+            for (const itemName of newItems) {
+                const { data: template } = await supabase
+                    .from('item_templates')
+                    .select('id')
+                    .ilike('name', `%${itemName}%`)
+                    .limit(1)
+                    .single();
+
+                if (template) {
+                    await supabase
+                        .from('character_inventory')
+                        .insert({ character_id: characterId, item_template_id: template.id });
+                    console.log(`Added item: ${itemName}`);
+                }
+            }
         }
 
         let imageUrl = "";

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { CharacterState } from '@/lib/game-data';
 import { getVisualAsset } from '@/lib/visual-canon';
-import { mockInventory } from '@/lib/game-data';
+import { InventoryItem } from '@/lib/game-data';
 import { supabase } from '@/lib/supabase';
 
 interface LedgerPanelProps {
@@ -10,6 +10,7 @@ interface LedgerPanelProps {
     characterId?: string;
     characterClass?: string;
     allegiance?: string;
+    inventory?: InventoryItem[];
 }
 
 const STAT_LABELS: Record<string, string> = {
@@ -26,7 +27,7 @@ function modifier(val: number) {
     return mod >= 0 ? `+${mod}` : `${mod}`;
 }
 
-export default function LedgerPanel({ character, characterId, characterClass, allegiance }: LedgerPanelProps) {
+export default function LedgerPanel({ character, characterId, characterClass, allegiance, inventory = [] }: LedgerPanelProps) {
     const [activeTab, setActiveTab] = useState<'character' | 'stats' | 'inventory'>('character');
     const [portraitSrc, setPortraitSrc] = useState<string | undefined>(
         character.portraitId?.startsWith('http')
@@ -217,10 +218,13 @@ export default function LedgerPanel({ character, characterId, characterClass, al
                         <div className="bg-[#13141c] p-4 rounded-xl border border-white/5">
                             <div className="flex justify-between items-center mb-2">
                                 <span className="text-xs font-bold text-emerald-400 tracking-widest uppercase">Experience</span>
-                                <span className="text-[10px] text-zinc-500">0 / 300 XP</span>
+                                <span className="text-[10px] text-zinc-500">{character.xp} / {(character.level * 1000)} XP</span>
                             </div>
                             <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                                <div className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 w-[0%] rounded-full" />
+                                <div 
+                                    className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-full transition-all duration-500" 
+                                    style={{ width: `${Math.min(100, (character.xp / (character.level * 1000)) * 100)}%` }} 
+                                />
                             </div>
                         </div>
 
@@ -291,7 +295,7 @@ export default function LedgerPanel({ character, characterId, characterClass, al
                     <div className="p-4 space-y-3">
                         <div className="flex items-center justify-between">
                             <p className="text-xs font-bold text-[#ffb74d]/60 tracking-widest uppercase">Carried Items</p>
-                            <span className="text-xs text-zinc-600">{mockInventory.length} / 20 slots</span>
+                            <span className="text-xs text-zinc-600">{inventory.length} / 20 slots</span>
                         </div>
 
                         <div className="bg-[#13141c] rounded-lg border border-white/5 px-3 py-2">
@@ -305,29 +309,35 @@ export default function LedgerPanel({ character, characterId, characterClass, al
                         </div>
 
                         <div className="space-y-2">
-                            {mockInventory.map((item) => {
-                                const rarityColor: Record<string, string> = {
-                                    common: 'text-zinc-400',
-                                    uncommon: 'text-emerald-400',
-                                    rare: 'text-blue-400',
-                                    epic: 'text-purple-400',
-                                    legendary: 'text-[#ffb74d]',
-                                };
-                                return (
-                                    <div key={item.id} className="bg-[#13141c] rounded-xl border border-white/5 p-3 flex gap-3 items-center hover:border-white/10 transition-colors">
-                                        <div className="w-10 h-10 bg-zinc-800/80 rounded-lg flex items-center justify-center text-lg shrink-0 border border-white/5">
-                                            {item.type === 'weapon' || item.type === 'Weapon' ? '⚔' : item.type === 'armor' || item.type === 'Armor' ? '🛡' : item.type === 'consumable' || item.type === 'Potion' ? '🧪' : '📦'}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="text-sm font-bold text-zinc-200 truncate">{item.name}</div>
-                                            <div className={`text-xs uppercase tracking-wider font-bold ${rarityColor[item.rarity] || 'text-zinc-500'}`}>
-                                                {item.rarity} · {item.type}
+                            {inventory.length > 0 ? (
+                                inventory.map((item) => {
+                                    const rarityColor: Record<string, string> = {
+                                        common: 'text-zinc-400',
+                                        uncommon: 'text-emerald-400',
+                                        rare: 'text-blue-400',
+                                        'very rare': 'text-purple-400',
+                                        legendary: 'text-[#ffb74d]',
+                                    };
+                                    return (
+                                        <div key={item.id} className="bg-[#13141c] rounded-xl border border-white/5 p-3 flex gap-3 items-center hover:border-white/10 transition-colors">
+                                            <div className="w-10 h-10 bg-zinc-800/80 rounded-lg flex items-center justify-center text-lg shrink-0 border border-white/5">
+                                                {item.type === 'weapon' || item.type === 'Weapon' ? '⚔' : item.type === 'armor' || item.type === 'Armor' ? '🛡' : item.type === 'Potion' ? '🧪' : '📦'}
                                             </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="text-sm font-bold text-zinc-200 truncate">{item.name}</div>
+                                                <div className={`text-xs uppercase tracking-wider font-bold ${rarityColor[item.rarity] || 'text-zinc-500'}`}>
+                                                    {item.rarity} · {item.type}
+                                                </div>
+                                            </div>
+                                            <div className="text-xs text-zinc-600 shrink-0">×{ (item as any).quantity || 1 }</div>
                                         </div>
-                                        <div className="text-xs text-zinc-600 shrink-0">×1</div>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })
+                            ) : (
+                                <div className="py-8 text-center border-2 border-dashed border-white/5 rounded-xl">
+                                    <p className="text-zinc-600 text-sm italic font-[family-name:var(--font-lato)]">Your packs are empty...</p>
+                                </div>
+                            )}
                         </div>
 
                         <div className="bg-[#13141c] rounded-xl border border-[#ffb74d]/10 px-4 py-3 flex items-center justify-between mt-2">
