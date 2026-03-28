@@ -242,9 +242,9 @@ export default function LedgerPanel({ character, characterId, characterClass, al
                                 const mod = modifier(val);
                                 return (
                                     <div key={key} className="bg-[#13141c] rounded-xl border border-white/5 p-3 flex flex-col items-center gap-1">
-                                        <span className="text-[9px] font-bold text-zinc-500 tracking-widest uppercase">{abbr}</span>
-                                        <span className="text-xl font-bold text-white font-[family-name:var(--font-cinzel)]">{val}</span>
-                                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${parseInt(mod) >= 0 ? 'bg-emerald-900/50 text-emerald-400' : 'bg-red-900/50 text-red-400'}`}>
+                                        <span className="text-xs font-bold text-zinc-500 tracking-widest uppercase">{abbr}</span>
+                                        <span className="text-2xl font-bold text-white font-[family-name:var(--font-cinzel)]">{val}</span>
+                                        <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${parseInt(mod) >= 0 ? 'bg-emerald-900/50 text-emerald-400' : 'bg-red-900/50 text-red-400'}`}>
                                             {mod}
                                         </span>
                                     </div>
@@ -262,10 +262,10 @@ export default function LedgerPanel({ character, characterId, characterClass, al
                             ].map(({ label, value, icon }) => (
                                 <div key={label} className="bg-[#13141c] rounded-lg border border-white/5 px-4 py-2.5 flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-sm">{icon}</span>
-                                        <span className="text-xs text-zinc-400">{label}</span>
+                                        <span className="text-base">{icon}</span>
+                                        <span className="text-sm text-zinc-400">{label}</span>
                                     </div>
-                                    <span className="text-xs font-bold text-white">{value}</span>
+                                    <span className="text-sm font-bold text-white">{value}</span>
                                 </div>
                             ))}
                         </div>
@@ -319,12 +319,12 @@ export default function LedgerPanel({ character, characterId, characterClass, al
                                             {item.type === 'weapon' || item.type === 'Weapon' ? '⚔' : item.type === 'armor' || item.type === 'Armor' ? '🛡' : item.type === 'consumable' || item.type === 'Potion' ? '🧪' : '📦'}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <div className="text-xs font-bold text-zinc-200 truncate">{item.name}</div>
-                                            <div className={`text-[11px] uppercase tracking-wider font-bold ${rarityColor[item.rarity] || 'text-zinc-500'}`}>
+                                            <div className="text-sm font-bold text-zinc-200 truncate">{item.name}</div>
+                                            <div className={`text-xs uppercase tracking-wider font-bold ${rarityColor[item.rarity] || 'text-zinc-500'}`}>
                                                 {item.rarity} · {item.type}
                                             </div>
                                         </div>
-                                        <div className="text-[9px] text-zinc-600 shrink-0">×1</div>
+                                        <div className="text-xs text-zinc-600 shrink-0">×1</div>
                                     </div>
                                 );
                             })}
@@ -332,10 +332,10 @@ export default function LedgerPanel({ character, characterId, characterClass, al
 
                         <div className="bg-[#13141c] rounded-xl border border-[#ffb74d]/10 px-4 py-3 flex items-center justify-between mt-2">
                             <div className="flex items-center gap-2">
-                                <span className="text-base">🪙</span>
-                                <span className="text-xs font-bold text-zinc-400">Gold Coins</span>
+                                <span className="text-lg">🪙</span>
+                                <span className="text-sm font-bold text-zinc-400">Gold Coins</span>
                             </div>
-                            <span className="text-sm font-bold text-[#ffb74d]">150</span>
+                            <span className="text-base font-bold text-[#ffb74d]">150</span>
                         </div>
                     </div>
                 )}
