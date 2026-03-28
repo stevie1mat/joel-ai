@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 import { Mistral } from '@mistralai/mistralai';
 import Bytez from 'bytez.js';
 
@@ -14,7 +14,7 @@ const mistral = new Mistral({
 let bytezModel: any = null;
 if (BYTEZ_KEY) {
     const bytez = new Bytez(BYTEZ_KEY);
-    bytezModel = bytez.model("stabilityai/stable-diffusion-xl-base-1.0");
+    bytezModel = bytez.model(process.env.BYTEZ_IMAGE_MODEL || "stabilityai/stable-diffusion-xl-base-1.0");
 }
 
 const SYSTEM_PROMPT = `
@@ -34,6 +34,8 @@ CRITICAL RULES:
    - Even simple actions like talking to an NPC should earn at least 5-10 XP.
 4. Track HP changes: combat damage (-1 to -20), traps (-5 to -15), healing (+5 to +20).
 5. Award items when narratively appropriate (finding loot, buying from merchants, quest rewards).
+6. Track GOLD: Award gold for completing quests (10-100), finding treasure (5-50), selling items. Deduct gold for purchases or bribes.
+7. Each item has a WEIGHT in lbs. A weapon weighs 2-10 lbs, armor 10-45, potions 0.5, misc 1-5.
 
 Format your response as JSON:
 {
@@ -46,13 +48,18 @@ Format your response as JSON:
   "gameStateUpdates": {
     "hpChange": number,      // e.g., -5 for damage, +10 for healing. Use 0 ONLY if truly no change.
     "xpEarned": number,      // ALWAYS award XP for actions. Minimum 5 for any action.
-    "newItems": string[],    // Array of item names to add (e.g. 'Healing Potion', 'Longsword', 'Leather Armor', 'Torch')
+    "goldChange": number,    // e.g., +50 for finding treasure, -20 for buying something. Use 0 if no change.
+    "newItems": [{"name": "string", "weight": number, "type": "Weapon|Armor|Potion|General", "rarity": "Common|Uncommon|Rare|Legendary"}],
     "removedItems": string[] // Array of item names to remove (e.g. when consumed)
   }
 }
 `;
 
 export async function POST(req: NextRequest) {
+    const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
     try {
         const body = await req.json();
         const { action, characterId, userId } = body;
@@ -159,15 +166,16 @@ export async function POST(req: NextRequest) {
         const gameStateUpdates = parsedResponse.gameStateUpdates || {};
         const hpChange = gameStateUpdates.hpChange ?? 0;
         const xpEarned = gameStateUpdates.xpEarned ?? 0;
+        const goldChange = gameStateUpdates.goldChange ?? 0;
         const newItems = gameStateUpdates.newItems;
         const removedItems = gameStateUpdates.removedItems;
 
-        console.log(`Game state updates from AI: HP=${hpChange}, XP=${xpEarned}, items=${JSON.stringify(newItems || [])}`);
+        console.log(`Game state updates from AI: HP=${hpChange}, XP=${xpEarned}, Gold=${goldChange}, items=${JSON.stringify(newItems || [])}`);
 
-        if (hpChange !== 0 || xpEarned !== 0) {
+        if (hpChange !== 0 || xpEarned !== 0 || goldChange !== 0) {
             const { data: charData, error: fetchErr } = await supabase
                 .from('characters')
-                .select('current_hp, xp, constitution')
+                .select('current_hp, xp, constitution, gold')
                 .eq('id', characterId)
                 .single();
 
@@ -178,12 +186,13 @@ export async function POST(req: NextRequest) {
                 const currentHp = charData.current_hp ?? maxHp;
                 const newHp = Math.max(0, Math.min(maxHp, currentHp + hpChange));
                 const newXp = (charData.xp || 0) + xpEarned;
+                const newGold = Math.max(0, (charData.gold || 0) + goldChange);
 
-                console.log(`Updating character: HP ${currentHp} → ${newHp}, XP ${charData.xp || 0} → ${newXp}`);
+                console.log(`Updating character: HP ${currentHp} → ${newHp}, XP ${charData.xp || 0} → ${newXp}, Gold ${charData.gold || 0} → ${newGold}`);
 
                 const { error: updateErr } = await supabase
                     .from('characters')
-                    .update({ current_hp: newHp, xp: newXp })
+                    .update({ current_hp: newHp, xp: newXp, gold: newGold })
                     .eq('id', characterId);
 
                 if (updateErr) {
@@ -196,9 +205,15 @@ export async function POST(req: NextRequest) {
 
         // --- Handle Inventory Updates ---
         if (newItems && Array.isArray(newItems) && newItems.length > 0) {
-            for (const itemName of newItems) {
+            for (const itemEntry of newItems) {
                 try {
-                    console.log(`Processing new item: ${itemName}`);
+                    // Support both string items (legacy) and object items (new format)
+                    const itemName = typeof itemEntry === 'string' ? itemEntry : itemEntry.name;
+                    const itemWeight = typeof itemEntry === 'object' ? (itemEntry.weight ?? 1) : 1;
+                    const itemType = typeof itemEntry === 'object' ? (itemEntry.type ?? 'General') : 'General';
+                    const itemRarity = typeof itemEntry === 'object' ? (itemEntry.rarity ?? 'Common') : 'Common';
+                    
+                    console.log(`Processing new item: ${itemName} (${itemWeight} lbs, ${itemRarity})`);
                     
                     // 1. Find or create item template
                     let { data: template, error: templateErr } = await supabase
@@ -214,8 +229,9 @@ export async function POST(req: NextRequest) {
                             .insert({
                                 name: itemName,
                                 description: `A newly discovered item: ${itemName}`,
-                                type: 'General',
-                                rarity: 'Common'
+                                type: itemType,
+                                rarity: itemRarity,
+                                weight: itemWeight
                             })
                             .select('id')
                             .single();
@@ -249,7 +265,7 @@ export async function POST(req: NextRequest) {
                         }
                     }
                 } catch (err) {
-                    console.error(`Error processing item "${itemName}":`, err);
+                    console.error(`Error processing item "${typeof itemEntry === 'string' ? itemEntry : itemEntry?.name}":`, err);
                 }
             }
         }

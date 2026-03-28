@@ -291,7 +291,12 @@ export default function LedgerPanel({ character, characterId, characterClass, al
                 )}
 
                 {/* ── GEAR TAB ── */}
-                {activeTab === 'inventory' && (
+                {activeTab === 'inventory' && (() => {
+                    const totalWeight = inventory.reduce((sum, item) => sum + ((item as any).weight || 1) * ((item as any).quantity || 1), 0);
+                    const strScore = character.stats?.strength ?? 10;
+                    const maxCarry = strScore * 15;
+                    const encumbrancePct = maxCarry > 0 ? (totalWeight / maxCarry) * 100 : 0;
+                    return (
                     <div className="p-4 space-y-3">
                         <div className="flex items-center justify-between">
                             <p className="text-xs font-bold text-[#ffb74d]/60 tracking-widest">Carried Items</p>
@@ -301,10 +306,10 @@ export default function LedgerPanel({ character, characterId, characterClass, al
                         <div className="bg-[#13141c] rounded-lg border border-white/5 px-3 py-2">
                             <div className="flex justify-between mb-1.5">
                                 <span className="text-[11px] text-zinc-500 uppercase tracking-wider">Encumbrance</span>
-                                <span className="text-[11px] text-zinc-500">12 / 75 lbs</span>
+                                <span className="text-[11px] text-zinc-500">{totalWeight.toFixed(1)} / {maxCarry} lbs</span>
                             </div>
                             <div className="h-1 bg-zinc-800 rounded-full">
-                                <div className="h-full bg-[#ffb74d]/50 rounded-full w-[16%]" />
+                                <div className={`h-full rounded-full transition-all duration-500 ${encumbrancePct > 80 ? 'bg-red-500/70' : 'bg-[#ffb74d]/50'}`} style={{ width: `${Math.min(100, encumbrancePct)}%` }} />
                             </div>
                         </div>
 
@@ -345,10 +350,11 @@ export default function LedgerPanel({ character, characterId, characterClass, al
                                 <span className="text-lg">🪙</span>
                                 <span className="text-sm font-bold text-zinc-400">Gold Coins</span>
                             </div>
-                            <span className="text-base font-bold text-[#ffb74d]">150</span>
+                            <span className="text-base font-bold text-[#ffb74d]">{character.gold ?? 0}</span>
                         </div>
                     </div>
-                )}
+                    );
+                })()}
             </div>
         </div>
     );

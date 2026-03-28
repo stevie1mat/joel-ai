@@ -128,6 +128,7 @@ export default function GameUIPage() {
             setInventory(data.map(row => ({
                 id: row.id,
                 quantity: row.quantity,
+                weight: row.item_templates?.weight || 1,
                 ...row.item_templates
             })));
         }
@@ -177,6 +178,7 @@ export default function GameUIPage() {
                 level: data.level,
                 xp: data.xp || 0,
                 current_hp: data.current_hp,
+                gold: data.gold || 0,
                 allegiance: data.allegiance,
                 avatar_url: data.avatar_url,
                 stats: {
@@ -396,6 +398,7 @@ export default function GameUIPage() {
             temp: 0
         },
         xp: character.xp || 0,
+        gold: character.gold || 0,
         ac: 10 + Math.floor((character.stats.dexterity - 10) / 2),
         speed: 30,
         portraitId: character.avatar_url || undefined,
@@ -696,6 +699,22 @@ export default function GameUIPage() {
                     </span>
                     <div className="flex gap-2">
                         {/* Character Sheet Toggle */}
+                    <div className="flex items-center gap-2">
+                        {/* Clear History Button */}
+                        <button
+                            onClick={() => {
+                                if (window.confirm('Wipe all chronicle history and reset your journey?')) {
+                                    handleReset();
+                                }
+                            }}
+                            className="p-1.5 text-zinc-600 hover:text-red-400/80 transition-colors"
+                            title="Reset Adventure"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                            </svg>
+                        </button>
+                        
                         <button
                             onClick={() => togglePanel('character')}
                             className={`group relative p-2 rounded-full transition-all duration-300 ${activePanel === 'character' ? 'bg-[#ffb74d]/20 scale-110' : 'bg-black/40 hover:bg-black/60'}`}
@@ -707,6 +726,7 @@ export default function GameUIPage() {
                             </svg>
                             <div className="absolute inset-0 rounded-full ring-2 ring-[#ffb74d]/50 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </button>
+                    </div>
                     </div>
                 </div>
 

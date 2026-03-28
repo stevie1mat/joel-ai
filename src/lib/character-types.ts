@@ -16,6 +16,7 @@ export interface Character {
     level: number;
     xp?: number;
     current_hp?: number;
+    gold?: number;
     allegiance?: string;
     avatar_url?: string;
 }

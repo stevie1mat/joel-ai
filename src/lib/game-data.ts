@@ -23,6 +23,7 @@ export interface CharacterState {
     class: string;
     level: number;
     xp: number;
+    gold?: number;
     portraitId?: string;
     hp: { current: number; max: number; temp: number };
     ac: number;
