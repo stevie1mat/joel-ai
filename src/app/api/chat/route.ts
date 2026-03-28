@@ -23,22 +23,31 @@ Your role is to narrate the story, describe the environment, and determine the o
 Be descriptive, immersive, and fair. If the player attempts an action that requires a skill check, look for a "[Rolled: X]" tag in their input.
 If present, USE THAT VALUE to determine the outcome.
 
-IMPORTANT: Along with your narrative response, you MUST also provide a brief image description for scene visualization and environmental animation flags.
-Crucially, you must also provide game state updates if the player's action resulted in health changes, experience gain, or finding/losing items.
+CRITICAL RULES:
+1. You MUST respond with valid JSON only — no markdown, no code fences, no extra text.
+2. You MUST always include ALL fields listed below in your response, including gameStateUpdates.
+3. For gameStateUpdates: EVERY meaningful player action should earn XP (10-100 depending on difficulty).
+   - Exploring a new area: 10-25 XP
+   - Completing a task or puzzle: 25-75 XP
+   - Winning combat: 50-100 XP
+   - Clever roleplay or creative solutions: 15-50 XP
+   - Even simple actions like talking to an NPC should earn at least 5-10 XP.
+4. Track HP changes: combat damage (-1 to -20), traps (-5 to -15), healing (+5 to +20).
+5. Award items when narratively appropriate (finding loot, buying from merchants, quest rewards).
 
-Format your response as JSON with these fields:
+Format your response as JSON:
 {
   "narrative": "Your narrative response here...",
-  "imagePrompt": "Brief visual description for AI image generation",
+  "imagePrompt": "Brief visual description for AI image generation (dark fantasy style, atmospheric)",
   "animations": {
     "flickering_light": boolean, "windy_foliage": boolean, "rain": boolean, "snow": boolean,
     "fog": boolean, "embers": boolean, "lightning": boolean
   },
   "gameStateUpdates": {
-    "hpChange": number,      // e.g., -5 for damage, +10 for healing. Use 0 if no change.
-    "xpEarned": number,      // e.g., 50 for completing a task. Use 0 if no change.
-    "newItems": string[],    // Array of item names to add (must match basic names like 'Healing Potion', 'Longsword', 'Leather Armor', 'Torch')
-    "removedItems": string[] // Array of item names to remove
+    "hpChange": number,      // e.g., -5 for damage, +10 for healing. Use 0 ONLY if truly no change.
+    "xpEarned": number,      // ALWAYS award XP for actions. Minimum 5 for any action.
+    "newItems": string[],    // Array of item names to add (e.g. 'Healing Potion', 'Longsword', 'Leather Armor', 'Torch')
+    "removedItems": string[] // Array of item names to remove (e.g. when consumed)
   }
 }
 `;
@@ -148,25 +157,40 @@ export async function POST(req: NextRequest) {
 
         // --- Handle Game State Updates ---
         const gameStateUpdates = parsedResponse.gameStateUpdates || {};
-        const { hpChange, xpEarned, newItems, removedItems } = gameStateUpdates;
+        const hpChange = gameStateUpdates.hpChange ?? 0;
+        const xpEarned = gameStateUpdates.xpEarned ?? 0;
+        const newItems = gameStateUpdates.newItems;
+        const removedItems = gameStateUpdates.removedItems;
 
-        if (hpChange || xpEarned) {
-            console.log(`Applying updates: HP ${hpChange}, XP ${xpEarned}`);
-            const { data: charData } = await supabase
+        console.log(`Game state updates from AI: HP=${hpChange}, XP=${xpEarned}, items=${JSON.stringify(newItems || [])}`);
+
+        if (hpChange !== 0 || xpEarned !== 0) {
+            const { data: charData, error: fetchErr } = await supabase
                 .from('characters')
                 .select('current_hp, xp, constitution')
                 .eq('id', characterId)
                 .single();
 
-            if (charData) {
-                const currentHp = charData.current_hp ?? (10 + Math.floor(((charData.constitution || 10) - 10) / 2));
-                const newHp = Math.max(0, currentHp + (hpChange || 0));
-                const newXp = (charData.xp || 0) + (xpEarned || 0);
+            if (fetchErr) {
+                console.error('Failed to fetch character for update:', fetchErr);
+            } else if (charData) {
+                const maxHp = 10 + Math.floor(((charData.constitution || 10) - 10) / 2);
+                const currentHp = charData.current_hp ?? maxHp;
+                const newHp = Math.max(0, Math.min(maxHp, currentHp + hpChange));
+                const newXp = (charData.xp || 0) + xpEarned;
 
-                await supabase
+                console.log(`Updating character: HP ${currentHp} → ${newHp}, XP ${charData.xp || 0} → ${newXp}`);
+
+                const { error: updateErr } = await supabase
                     .from('characters')
                     .update({ current_hp: newHp, xp: newXp })
                     .eq('id', characterId);
+
+                if (updateErr) {
+                    console.error('Failed to update character stats:', updateErr);
+                } else {
+                    console.log('Character stats updated successfully');
+                }
             }
         }
 

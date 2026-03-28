@@ -50,6 +50,10 @@ export default function GameUIPage() {
     // Keyboard listeners
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
+            // Don't capture keys when typing in inputs
+            const tag = (e.target as HTMLElement)?.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement)?.isContentEditable) return;
+
             const key = e.key.toLowerCase();
             if (['arrowleft', 'arrowright', 'a', 'd'].includes(key)) {
                 e.preventDefault();
