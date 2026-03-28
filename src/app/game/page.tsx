@@ -243,7 +243,7 @@ export default function GameUIPage() {
         speed: 30,
         portraitId: character.avatar_url || undefined,
         background: character.allegiance || 'Free Adventurer',
-        stats: character.stats,
+        stats: character.stats as unknown as { [key: string]: number },
         attributes: [],
         conditions: [],
         resources: []
@@ -322,7 +322,7 @@ export default function GameUIPage() {
 
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 py-3 border-b border-[#ffb74d]/10 shrink-0">
-                    <span className="text-[#ffb74d]/60 font-[family-name:var(--font-cinzel)] text-xs tracking-[0.3em] uppercase">
+                    <span className="text-[#ffb74d]/60 font-[family-name:var(--font-cinzel)] text-sm tracking-[0.3em] uppercase">
                         Chronicles
                     </span>
                     <div className="flex gap-2">
@@ -357,9 +357,14 @@ export default function GameUIPage() {
                     <div className="absolute inset-0 z-40 rounded-2xl bg-black/95 border border-[#ffb74d]/30 shadow-2xl backdrop-blur-md overflow-y-auto">
                         <button
                             onClick={() => setActivePanel('none')}
-                            className="absolute top-3 right-3 p-1 text-[#ffb74d]/60 hover:text-[#ffb74d] transition-colors"
+                            className="absolute top-3 right-3 p-1 text-[#ffb74d]/60 hover:text-[#ffb74d] transition-colors z-50"
                         >✕</button>
-                        <LedgerPanel character={gameCharacter} />
+                        <LedgerPanel
+                            character={gameCharacter}
+                            characterId={character.id as string}
+                            characterClass={character.class}
+                            allegiance={character.allegiance}
+                        />
                     </div>
                 )}
 

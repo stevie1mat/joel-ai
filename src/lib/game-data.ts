@@ -22,10 +22,12 @@ export interface CharacterState {
     race: string;
     class: string;
     level: number;
-    portraitId?: string; // Link to Visual Canon
+    portraitId?: string;
     hp: { current: number; max: number; temp: number };
     ac: number;
     speed: number;
+    background?: string;
+    stats?: { [key: string]: number };
     attributes: Attribute[];
     conditions: Condition[];
     resources: Resource[];

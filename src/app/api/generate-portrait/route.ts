@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import Bytez from 'bytez.js';
 
 const BYTEZ_KEY = process.env.BYTEZ_API_KEY || '';
@@ -10,19 +9,9 @@ if (BYTEZ_KEY) {
     bytezModel = bytez.model('google/imagen-4.0-generate-001');
 }
 
-// Use service role key so we can update the characters table from the server
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
 export async function POST(req: NextRequest) {
     try {
-        const { characterId, name, characterClass, race, allegiance } = await req.json();
-
-        if (!characterId) {
-            return NextResponse.json({ error: 'characterId is required' }, { status: 400 });
-        }
+        const { name, characterClass, race, allegiance } = await req.json();
 
         if (!bytezModel) {
             return NextResponse.json({ error: 'Image generation is not configured.' }, { status: 503 });
@@ -53,17 +42,6 @@ cinematic painting style, highly detailed, fantasy art. Dark background with mys
 
         if (!imageUrl) {
             return NextResponse.json({ error: 'No image returned from generator' }, { status: 500 });
-        }
-
-        // Save the new portrait URL to the characters table
-        const { error: dbError } = await supabaseAdmin
-            .from('characters')
-            .update({ avatar_url: imageUrl })
-            .eq('id', characterId);
-
-        if (dbError) {
-            console.error('Failed to save portrait:', dbError);
-            // Still return the image — don't block the user
         }
 
         return NextResponse.json({ imageUrl });

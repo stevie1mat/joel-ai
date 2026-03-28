@@ -48,7 +48,7 @@ export default function ActionDeck({ inventory, onAction }: ActionDeckProps) {
                             }
                         }}
                         placeholder="What do you do?"
-                        className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-[#ffb74d]/50 focus:ring-1 focus:ring-[#ffb74d]/50 resize-none h-20 text-sm pr-12 transition-all"
+                        className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-[#ffb74d]/50 focus:ring-1 focus:ring-[#ffb74d]/50 resize-none h-20 text-base pr-12 transition-all"
                     />
 
                     {/* Submit Button (Arrow) - Positioned inside textarea area */}
