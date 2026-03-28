@@ -252,23 +252,6 @@ export default function GameUIPage() {
     return (
         <div className="h-screen w-screen bg-black relative overflow-hidden font-[family-name:var(--font-cinzel)]">
 
-            {/* Visual Stage (Background) */}
-            <div className="absolute inset-0 z-0">
-                <VisualStage
-                    imageSrc={activeVisualSrc}
-                    caption={activeCaption}
-                />
-            </div>
-
-            {/* Dark Overlay for readability - VisualStage has its own, but we might need extra for UI contrast if needed, 
-                but let's rely on VisualStage's gradient first. */}
-
-
-
-
-
-
-
             <style jsx>{`
                 @keyframes pulse-slow {
                     0%, 100% { opacity: 0.3; }
@@ -326,60 +309,81 @@ export default function GameUIPage() {
                 }
             `}</style>
 
-            {/* Top Right HUD - Icons */}
-            <div className="absolute top-6 right-6 z-50 flex gap-4">
-                {/* Character Sheet Toggle (Ring Icon) */}
-                <button
-                    onClick={() => togglePanel('character')}
-                    className={`group relative p-3 rounded-full transition-all duration-300 ${activePanel === 'character' ? 'bg-[#ffb74d]/20 scale-110' : 'bg-black/40 hover:bg-black/60'}`}
-                    title="Character Sheet"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-[#ffb74d] drop-shadow-[0_0_10px_rgba(255,183,77,0.5)]">
-                        <path fillRule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z" clipRule="evenodd" />
-                        <path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.166a.75.75 0 0 0-1.06-1.06l-1.591 1.59a.75.75 0 1 0 1.06 1.061l1.591-1.59ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5H21a.75.75 0 0 1 .75.75ZM17.834 18.894a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 1 0-1.061 1.06l1.59 1.591ZM12 18a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z" />
-                    </svg>
-                    <div className="absolute inset-0 rounded-full ring-2 ring-[#ffb74d]/50 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </button>
-
-                {/* Inventory Toggle (Jewel Icon) */}
-                <button
-                    onClick={() => togglePanel('inventory')}
-                    className={`group relative p-3 rounded-full transition-all duration-300 ${activePanel === 'inventory' ? 'bg-[#ef4444]/20 scale-110' : 'bg-black/40 hover:bg-black/60'}`}
-                    title="Inventory"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-[#ef4444] drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">
-                        <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.902 7.098a3.75 3.75 0 0 1 3.804 0l.001.001a6.75 6.75 0 0 1 3.844 3.844l.001.001a3.75 3.75 0 0 1 0 3.804l-.001.001a6.75 6.75 0 0 1-3.844 3.844l-.001.001a3.75 3.75 0 0 1-3.804 0l-.001-.001a6.75 6.75 0 0 1-3.844-3.844l-.001-.001a3.75 3.75 0 0 1 0-3.804l.001-.001a6.75 6.75 0 0 1 3.844-3.844l.001-.001Z" clipRule="evenodd" />
-                    </svg>
-                    <div className="absolute inset-0 rounded-full ring-2 ring-[#ef4444]/50 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </button>
+            {/* ── Full-screen Visual Stage ── */}
+            <div className="absolute inset-0 z-0">
+                <VisualStage
+                    imageSrc={activeVisualSrc}
+                    caption={activeCaption}
+                />
             </div>
 
-            {/* Main Content Area */}
-            <div className="relative z-10 w-full h-full flex flex-col items-center justify-end pb-8">
+            {/* ── Floating Chat Panel (right 1/3) ── */}
+            <div className="absolute top-4 right-4 bottom-4 w-[32%] z-20 flex flex-col rounded-2xl overflow-hidden bg-black/60 backdrop-blur-xl border border-[#ffb74d]/20 shadow-[0_8px_48px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,183,77,0.08)]">
 
-                {/* Narrative Feed - Centered, Scrollable */}
-                <div className="w-full max-w-3xl flex-1 overflow-y-auto mb-4 px-4 scrollbar-hide mask-gradient-top">
+                {/* Header */}
+                <div className="flex items-center justify-between px-4 py-3 border-b border-[#ffb74d]/10 shrink-0">
+                    <span className="text-[#ffb74d]/60 font-[family-name:var(--font-cinzel)] text-xs tracking-[0.3em] uppercase">
+                        Chronicles
+                    </span>
+                    <div className="flex gap-2">
+                        {/* Character Sheet Toggle */}
+                        <button
+                            onClick={() => togglePanel('character')}
+                            className={`group relative p-2 rounded-full transition-all duration-300 ${activePanel === 'character' ? 'bg-[#ffb74d]/20 scale-110' : 'bg-black/40 hover:bg-black/60'}`}
+                            title="Character Sheet"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-[#ffb74d] drop-shadow-[0_0_6px_rgba(255,183,77,0.5)]">
+                                <path fillRule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z" clipRule="evenodd" />
+                                <path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.166a.75.75 0 0 0-1.06-1.06l-1.591 1.59a.75.75 0 1 0 1.06 1.061l1.591-1.59ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5H21a.75.75 0 0 1 .75.75ZM17.834 18.894a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 1 0-1.061 1.06l1.59 1.591ZM12 18a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z" />
+                            </svg>
+                            <div className="absolute inset-0 rounded-full ring-2 ring-[#ffb74d]/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </button>
+
+                        {/* Inventory Toggle */}
+                        <button
+                            onClick={() => togglePanel('inventory')}
+                            className={`group relative p-2 rounded-full transition-all duration-300 ${activePanel === 'inventory' ? 'bg-[#ef4444]/20 scale-110' : 'bg-black/40 hover:bg-black/60'}`}
+                            title="Inventory"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-[#ef4444] drop-shadow-[0_0_6px_rgba(239,68,68,0.5)]">
+                                <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.902 7.098a3.75 3.75 0 0 1 3.804 0l.001.001a6.75 6.75 0 0 1 3.844 3.844l.001.001a3.75 3.75 0 0 1 0 3.804l-.001.001a6.75 6.75 0 0 1-3.844 3.844l-.001.001a3.75 3.75 0 0 1-3.804 0l-.001-.001a6.75 6.75 0 0 1-3.844-3.844l-.001-.001a3.75 3.75 0 0 1 0-3.804l.001-.001a6.75 6.75 0 0 1 3.844-3.844l.001-.001Z" clipRule="evenodd" />
+                            </svg>
+                            <div className="absolute inset-0 rounded-full ring-2 ring-[#ef4444]/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </button>
+                    </div>
+                </div>
+
+                {/* Narrative Feed */}
+                <div className="flex-1 overflow-y-auto px-3 py-2 scrollbar-hide">
                     <NarrativeFeed items={narrative} isProcessing={isProcessing} onAction={handleAction} />
                 </div>
 
-                {/* Action Deck - Fixed Bottom */}
-                <div className="w-full max-w-3xl px-4">
+                {/* Action Deck */}
+                <div className="px-3 pb-4 pt-2 border-t border-[#ffb74d]/10 shrink-0">
                     <ActionDeck inventory={mockInventory} onAction={handleAction} />
                 </div>
+
+                {/* Overlay Panels — slide over the floating panel */}
+                {activePanel === 'character' && (
+                    <div className="absolute inset-0 z-40 rounded-2xl bg-black/95 border border-[#ffb74d]/30 shadow-2xl backdrop-blur-md overflow-y-auto">
+                        <button
+                            onClick={() => setActivePanel('none')}
+                            className="absolute top-3 right-3 p-1 text-[#ffb74d]/60 hover:text-[#ffb74d] transition-colors"
+                        >✕</button>
+                        <LedgerPanel character={gameCharacter} />
+                    </div>
+                )}
+
+                {activePanel === 'inventory' && character && (
+                    <div className="absolute inset-0 z-40 rounded-2xl bg-black/95 border border-[#ef4444]/30 shadow-2xl backdrop-blur-md overflow-y-auto">
+                        <button
+                            onClick={() => setActivePanel('none')}
+                            className="absolute top-3 right-3 p-1 text-[#ef4444]/60 hover:text-[#ef4444] transition-colors"
+                        >✕</button>
+                        <InventoryPanel characterId={character.id as string} />
+                    </div>
+                )}
             </div>
-
-            {/* Overlay Panels */}
-            {activePanel === 'character' && (
-                <div className="absolute top-20 right-6 z-40 w-[350px] bg-black/90 border border-[#ffb74d]/30 rounded-lg shadow-2xl backdrop-blur-md animate-slideInRight">
-                    <LedgerPanel character={gameCharacter} />
-                </div>
-            )}
-
-            {activePanel === 'inventory' && character && (
-                <div className="absolute top-20 right-20 z-40 w-[350px] animate-slideInRight">
-                    <InventoryPanel characterId={character.id as string} />
-                </div>
-            )}
 
             {/* System Toast */}
             {toast && (
